@@ -3,20 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>员工考勤信息管理系统</title>
+    <title>&#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479;</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <main class="home-wrap">
-    <section class="home-panel text-center">
-        <h1>员工考勤信息管理系统</h1>
-        <p class="text-secondary mt-3">Spring Boot + MyBatis + MySQL 课程设计</p>
-        <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-            <a class="btn btn-primary btn-lg px-4" th:href="@{/employee}">进入员工端</a>
-            <a class="btn btn-outline-primary btn-lg px-4" th:href="@{/admin}">进入管理员端</a>
+    <section class="home-panel">
+        <div class="text-center mx-auto mb-4" style="max-width: 760px;">
+            <span class="badge text-bg-primary mb-3">&#35838;&#31243;&#35774;&#35745;&#31649;&#29702;&#31995;&#32479;</span>
+            <h1 class="display-5 fw-bold">&#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479;</h1>
+            <p class="lead text-secondary mt-3">
+                &#22522;&#20110; Spring Boot + MyBatis + MySQL &#30340;&#21592;&#24037;&#32771;&#21220;&#31649;&#29702;&#24179;&#21488;&#65292;&#25903;&#25345;&#21592;&#24037;&#33258;&#21161;&#26597;&#35810;&#12289;&#31649;&#29702;&#21592;&#32500;&#25252;&#21644;&#26376;&#24230;&#37096;&#38376;&#32479;&#35745;&#12290;
+            </p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <a class="entry-card p-4" th:href="@{/employee}">
+                    <div class="module-icon">&#128100;</div>
+                    <h2 class="h4">&#36827;&#20837;&#21592;&#24037;&#31471;</h2>
+                    <p class="text-secondary mb-0">&#21592;&#24037;&#36755;&#20837;&#24037;&#21495;&#21518;&#26597;&#30475;&#20010;&#20154;&#20449;&#24687;&#12289;&#20986;&#21220;&#12289;&#35831;&#20551;&#12289;&#21152;&#29677;&#21644;&#20986;&#24046;&#35760;&#24405;&#12290;</p>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a class="entry-card p-4" th:href="@{/admin}">
+                    <div class="module-icon">&#128188;</div>
+                    <h2 class="h4">&#36827;&#20837;&#31649;&#29702;&#21592;&#31471;</h2>
+                    <p class="text-secondary mb-0">&#31649;&#29702;&#21592;&#32500;&#25252;&#21592;&#24037;&#12289;&#32771;&#21220;&#12289;&#35831;&#20551;&#12289;&#21152;&#29677;&#12289;&#20986;&#24046;&#20449;&#24687;&#65292;&#24182;&#36827;&#34892;&#32508;&#21512;&#26597;&#35810;&#21644;&#32479;&#35745;&#12290;</p>
+                </a>
+            </div>
         </div>
     </section>
 </main>
+<footer class="app-footer">&#169; 2026 &#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479; &#124; &#25968;&#25454;&#24211;&#35838;&#31243;&#35774;&#35745;</footer>
 </body>
 </html>

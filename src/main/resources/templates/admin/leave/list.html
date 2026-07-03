@@ -1,22 +1,34 @@
 <!doctype html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>请假管理</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>&#35831;&#20551;&#31649;&#29702;</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/admin}">管理员端</a><a class="btn btn-outline-secondary btn-sm" th:href="@{/admin}">返回</a></div></nav>
-<main class="container py-4"><h1 class="h3 mb-3">请假管理</h1><div class="alert alert-success" th:if="${message}" th:text="${message}"></div><div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+<nav class="navbar navbar-expand-lg"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/admin}">&#31649;&#29702;&#21592;&#24037;&#20316;&#21488;</a><a class="btn btn-outline-secondary btn-sm" th:href="@{/admin}">&#36820;&#22238;</a></div></nav>
+<main class="container page-shell">
+    <div class="page-title"><div><h1>&#35831;&#20551;&#31649;&#29702;</h1><p>&#32500;&#25252;&#21592;&#24037;&#35831;&#20551;&#31867;&#22411;&#12289;&#36215;&#27490;&#26102;&#38388;&#21644;&#35831;&#20551;&#22825;&#25968;</p></div></div>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
     <form class="card card-body mb-3" th:object="${record}" th:action="@{/admin/leave/save}" method="post">
         <input type="hidden" th:field="*{id}">
-        <div class="row g-2">
-            <div class="col-md-3"><label class="form-label">员工</label><select class="form-select" th:field="*{employeeId}" required><option value="">请选择</option><option th:each="e:${employees}" th:value="${e.id}" th:text="${e.employeeNo + ' - ' + e.name}"></option></select></div>
-            <div class="col-md-2"><label class="form-label">类型</label><select class="form-select" th:field="*{leaveType}"><option value="事假">事假</option><option value="病假">病假</option><option value="年假">年假</option><option value="调休">调休</option><option value="其他">其他</option></select></div>
-            <div class="col-md-3"><label class="form-label">开始</label><input class="form-control" type="datetime-local" th:field="*{startTime}" required></div>
-            <div class="col-md-3"><label class="form-label">结束</label><input class="form-control" type="datetime-local" th:field="*{endTime}" required></div>
-            <div class="col-md-1 d-grid align-items-end"><button class="btn btn-success" type="submit">保存</button></div>
-            <div class="col-12"><input class="form-control" th:field="*{reason}" placeholder="请假原因"></div>
+        <div class="row g-3">
+            <div class="col-md-3"><label class="form-label required">&#21592;&#24037;</label><select class="form-select" th:field="*{employeeId}" required><option value="">&#35831;&#36873;&#25321;</option><option th:each="e:${employees}" th:value="${e.id}" th:text="${e.employeeNo + ' - ' + e.name}"></option></select></div>
+            <div class="col-md-2"><label class="form-label required">&#31867;&#22411;</label><select class="form-select" th:field="*{leaveType}" required><option value="&#20107;&#20551;">&#20107;&#20551;</option><option value="&#30149;&#20551;">&#30149;&#20551;</option><option value="&#24180;&#20551;">&#24180;&#20551;</option><option value="&#35843;&#20241;">&#35843;&#20241;</option><option value="&#20854;&#20182;">&#20854;&#20182;</option></select></div>
+            <div class="col-md-3"><label class="form-label required">&#24320;&#22987;</label><input class="form-control" type="datetime-local" th:field="*{startTime}" required></div>
+            <div class="col-md-3"><label class="form-label required">&#32467;&#26463;</label><input class="form-control" type="datetime-local" th:field="*{endTime}" required></div>
+            <div class="col-md-1 d-grid align-items-end"><button class="btn btn-success" type="submit">&#20445;&#23384;</button></div>
+            <div class="col-12"><label class="form-label">&#35831;&#20551;&#21407;&#22240;</label><input class="form-control" th:field="*{reason}" placeholder="&#35831;&#22635;&#20889;&#35831;&#20551;&#21407;&#22240;"></div>
         </div>
     </form>
-    <div class="card"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>员工</th><th>部门</th><th>类型</th><th>开始</th><th>结束</th><th>天数</th><th>原因</th><th>操作</th></tr></thead><tbody>
-        <tr th:each="row:${records}"><td th:text="${row.employeeNo + ' ' + row.employeeName}"></td><td th:text="${row.departmentName}"></td><td th:text="${row.record.leaveType}"></td><td th:text="${row.record.startTime}"></td><td th:text="${row.record.endTime}"></td><td th:text="${row.record.days}"></td><td th:text="${row.record.reason}"></td><td class="text-nowrap"><a class="btn btn-sm btn-primary" th:href="@{/admin/leave/list(editId=${row.record.id})}">修改</a> <form class="d-inline" th:action="@{/admin/leave/delete}" method="post"><input type="hidden" name="id" th:value="${row.record.id}"><button class="btn btn-sm btn-danger" type="submit">删除</button></form></td></tr>
-        <tr th:if="${records == null or #lists.isEmpty(records)}"><td colspan="8" class="text-center text-secondary py-4">暂无数据</td></tr>
+
+    <div class="card"><div class="table-responsive"><table class="table table-hover"><thead><tr><th>&#21592;&#24037;</th><th>&#37096;&#38376;</th><th>&#31867;&#22411;</th><th>&#24320;&#22987;</th><th>&#32467;&#26463;</th><th>&#22825;&#25968;</th><th>&#21407;&#22240;</th><th>&#25805;&#20316;</th></tr></thead><tbody>
+        <tr th:each="row:${records}"><td th:text="${row.employeeNo + ' ' + row.employeeName}"></td><td th:text="${row.departmentName}"></td><td><span class="badge text-bg-info" th:text="${row.record.leaveType}"></span></td><td th:text="${row.record.startTime}"></td><td th:text="${row.record.endTime}"></td><td th:text="${row.record.days}"></td><td th:text="${row.record.reason}"></td><td class="text-nowrap"><a class="btn btn-sm btn-primary" th:href="@{/admin/leave/list(editId=${row.record.id})}">&#20462;&#25913;</a> <form class="d-inline" th:action="@{/admin/leave/delete}" method="post"><input type="hidden" name="id" th:value="${row.record.id}"><button class="btn btn-sm btn-danger" type="submit">&#21024;&#38500;</button></form></td></tr>
+        <tr th:if="${records == null or #lists.isEmpty(records)}"><td colspan="8" class="text-center empty-state">&#26242;&#26080;&#25968;&#25454;</td></tr>
     </tbody></table></div></div>
-</main></body></html>
+</main>
+<footer class="app-footer">&#169; 2026 &#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479;</footer>
+</body></html>

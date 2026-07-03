@@ -3,29 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>管理员首页</title>
+    <title>&#31649;&#29702;&#21592;&#24037;&#20316;&#21488;</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/site.css" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white">
+<nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="index.html">员工考勤信息管理系统</a>
-        <a class="btn btn-outline-secondary btn-sm" href="employee-entry.html">员工端</a>
+        <a class="navbar-brand fw-bold" href="index.html">&#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479;</a>
+        <a class="btn btn-outline-secondary btn-sm" href="employee-entry.html">&#21592;&#24037;&#31471;</a>
     </div>
 </nav>
-<main class="container py-4">
-    <div class="side-note mb-4">管理员端用于维护员工、出勤、请假、加班、出差数据，并进行综合查询和月度部门统计。</div>
-    <div class="row g-3">
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-employee-list.html"><h2 class="h5">员工管理</h2><p class="text-secondary mb-0">维护员工基础信息</p></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-attendance-list.html"><h2 class="h5">出勤管理</h2><p class="text-secondary mb-0">登记打卡与状态</p></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-leave-list.html"><h2 class="h5">请假管理</h2><p class="text-secondary mb-0">记录请假信息</p></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-overtime-list.html"><h2 class="h5">加班管理</h2><p class="text-secondary mb-0">统计加班小时</p></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-trip-list.html"><h2 class="h5">出差管理</h2><p class="text-secondary mb-0">维护出差记录</p></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-search.html"><h2 class="h5">综合查询</h2><p class="text-secondary mb-0">多条件组合检索</p></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-statistics.html"><h2 class="h5">月度统计</h2><p class="text-secondary mb-0">分部门统计报表</p></a></div>
+<main class="container page-shell">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">&#31649;&#29702;&#21592;&#24037;&#20316;&#21488;</h1>
+            <p class="text-secondary mb-0">&#38745;&#24577;&#28436;&#31034;&#29256;&#65306;&#23637;&#31034;&#31649;&#29702;&#21592;&#31471;&#21151;&#33021;&#32467;&#26500;&#21644;&#39029;&#38754;&#25928;&#26524;</p>
+        </div>
     </div>
+
+    <section class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-2"><div class="stat-card p-3 h-100"><div class="text-secondary small">&#21592;&#24037;&#24635;&#25968;</div><div class="fs-3 fw-bold">36</div></div></div>
+        <div class="col-sm-6 col-lg-2"><div class="stat-card p-3 h-100"><div class="text-secondary small">&#22312;&#32844;&#21592;&#24037;</div><div class="fs-3 fw-bold text-success">34</div></div></div>
+        <div class="col-sm-6 col-lg-2"><div class="stat-card p-3 h-100"><div class="text-secondary small">&#24050;&#27880;&#38144;</div><div class="fs-3 fw-bold text-secondary">2</div></div></div>
+        <div class="col-sm-6 col-lg-2"><div class="stat-card p-3 h-100"><div class="text-secondary small">&#26412;&#26376;&#36831;&#21040;</div><div class="fs-3 fw-bold text-warning">5</div></div></div>
+        <div class="col-sm-6 col-lg-2"><div class="stat-card p-3 h-100"><div class="text-secondary small">&#35831;&#20551;&#22825;&#25968;</div><div class="fs-3 fw-bold text-primary">8.5</div></div></div>
+        <div class="col-sm-6 col-lg-2"><div class="stat-card p-3 h-100"><div class="text-secondary small">&#21152;&#29677;&#23567;&#26102;</div><div class="fs-3 fw-bold text-info">21</div></div></div>
+    </section>
+
+    <div class="side-note mb-4">&#31649;&#29702;&#21592;&#31471;&#29992;&#20110;&#32500;&#25252;&#21592;&#24037;&#12289;&#20986;&#21220;&#12289;&#35831;&#20551;&#12289;&#21152;&#29677;&#12289;&#20986;&#24046;&#25968;&#25454;&#65292;&#24182;&#36827;&#34892;&#32508;&#21512;&#26597;&#35810;&#21644;&#26376;&#24230;&#37096;&#38376;&#32479;&#35745;&#12290;</div>
+
+    <section>
+        <div class="section-title"><h2>&#21151;&#33021;&#20837;&#21475;</h2></div>
+        <div class="module-grid">
+            <a class="module-card p-4" href="admin-employee-list.html"><div class="module-icon">&#21592;</div><h2 class="h5">&#21592;&#24037;&#31649;&#29702;</h2><p class="text-secondary mb-0">&#32500;&#25252;&#21592;&#24037;&#22522;&#26412;&#20449;&#24687;</p></a>
+            <a class="module-card p-4" href="admin-attendance-list.html"><div class="module-icon">&#21220;</div><h2 class="h5">&#20986;&#21220;&#31649;&#29702;</h2><p class="text-secondary mb-0">&#30331;&#35760;&#25171;&#21345;&#19982;&#29366;&#24577;</p></a>
+            <a class="module-card p-4" href="admin-leave-list.html"><div class="module-icon">&#20551;</div><h2 class="h5">&#35831;&#20551;&#31649;&#29702;</h2><p class="text-secondary mb-0">&#35760;&#24405;&#35831;&#20551;&#20449;&#24687;</p></a>
+            <a class="module-card p-4" href="admin-overtime-list.html"><div class="module-icon">&#29677;</div><h2 class="h5">&#21152;&#29677;&#31649;&#29702;</h2><p class="text-secondary mb-0">&#32479;&#35745;&#21152;&#29677;&#23567;&#26102;</p></a>
+            <a class="module-card p-4" href="admin-trip-list.html"><div class="module-icon">&#24046;</div><h2 class="h5">&#20986;&#24046;&#31649;&#29702;</h2><p class="text-secondary mb-0">&#32500;&#25252;&#20986;&#24046;&#35760;&#24405;</p></a>
+            <a class="module-card p-4" href="admin-search.html"><div class="module-icon">&#26597;</div><h2 class="h5">&#32508;&#21512;&#26597;&#35810;</h2><p class="text-secondary mb-0">&#22810;&#26465;&#20214;&#32452;&#21512;&#26816;&#32034;</p></a>
+            <a class="module-card p-4" href="admin-statistics.html"><div class="module-icon">&#32479;</div><h2 class="h5">&#26376;&#24230;&#32479;&#35745;</h2><p class="text-secondary mb-0">&#20998;&#37096;&#38376;&#32479;&#35745;&#25253;&#34920;</p></a>
+        </div>
+    </section>
 </main>
-<footer class="page-footer">本页面为课程设计静态演示版，完整业务功能由 Spring Boot + MySQL 后端实现。</footer>
+<footer class="page-footer">&#26412;&#39029;&#38754;&#20026;&#35838;&#31243;&#35774;&#35745;&#38745;&#24577;&#28436;&#31034;&#29256;&#65292;&#23436;&#25972;&#19994;&#21153;&#21151;&#33021;&#30001; Spring Boot + MySQL &#21518;&#31471;&#23454;&#29616;&#12290;</footer>
 </body>
 </html>

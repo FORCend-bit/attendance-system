@@ -3,46 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>员工主页</title>
+    <title>&#21592;&#24037;&#20010;&#20154;&#20013;&#24515;</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom">
-    <div class="container"><a class="navbar-brand fw-bold" th:href="@{/}">员工考勤信息管理系统</a><a class="btn btn-outline-secondary btn-sm" th:href="@{/employee}">切换工号</a></div>
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">&#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479;</a>
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/employee}">&#20999;&#25442;&#24037;&#21495;</a>
+    </div>
 </nav>
-<main class="container py-4">
+<main class="container page-shell">
     <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
     <div th:if="${employee != null}">
-        <h1 class="h3 mb-3">员工主页</h1>
-        <div class="card mb-3">
-            <div class="card-body">
-                <h2 class="h5" th:text="${employee.name}">员工姓名</h2>
-                <p class="mb-0 text-secondary">
-                    <span th:text="${employee.employeeNo}">工号</span>
-                    <span class="mx-2">|</span>
-                    <span th:text="${employee.departmentName}">部门</span>
-                    <span class="mx-2">|</span>
-                    <span th:text="${employee.positionName}">岗位</span>
-                    <span class="mx-2">|</span>
-                    <span th:text="${employee.titleName}">职务</span>
-                </p>
-                <div class="row g-2 mt-3">
-                    <div class="col-md-3"><span class="text-secondary">状态：</span><span th:text="${employee.status}"></span></div>
-                    <div class="col-md-3"><span class="text-secondary">电话：</span><span th:text="${employee.phone ?: '未填写'}"></span></div>
-                    <div class="col-md-3"><span class="text-secondary">邮箱：</span><span th:text="${employee.email ?: '未填写'}"></span></div>
-                    <div class="col-md-3"><span class="text-secondary">入职：</span><span th:text="${employee.hireDate}"></span></div>
+        <div class="page-title">
+            <div>
+                <h1>&#21592;&#24037;&#20010;&#20154;&#20013;&#24515;</h1>
+                <p><span th:text="${employee.name}">&#21592;&#24037;&#22995;&#21517;</span> &#124; <span th:text="${employee.employeeNo}">&#24037;&#21495;</span></p>
+            </div>
+            <span class="badge text-bg-success" th:text="${employee.status}">&#22312;&#32844;</span>
+        </div>
+
+        <section class="card mb-4">
+            <div class="card-body p-4">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="module-icon mb-0">&#21592;</div>
+                            <div>
+                                <h2 class="h4 mb-1" th:text="${employee.name}">&#21592;&#24037;&#22995;&#21517;</h2>
+                                <div class="text-secondary" th:text="${employee.employeeNo}">&#24037;&#21495;</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="row g-3">
+                            <div class="col-md-3"><div class="text-secondary small">&#37096;&#38376;</div><div class="fw-semibold" th:text="${employee.departmentName}">-</div></div>
+                            <div class="col-md-3"><div class="text-secondary small">&#23703;&#20301;</div><div class="fw-semibold" th:text="${employee.positionName}">-</div></div>
+                            <div class="col-md-3"><div class="text-secondary small">&#32844;&#21153;</div><div class="fw-semibold" th:text="${employee.titleName}">-</div></div>
+                            <div class="col-md-3"><div class="text-secondary small">&#20837;&#32844;&#26085;&#26399;</div><div class="fw-semibold" th:text="${employee.hireDate}">-</div></div>
+                            <div class="col-md-4"><div class="text-secondary small">&#30005;&#35805;</div><div th:text="${employee.phone ?: '&#26410;&#22635;&#20889;'}">-</div></div>
+                            <div class="col-md-4"><div class="text-secondary small">&#37038;&#31665;</div><div th:text="${employee.email ?: '&#26410;&#22635;&#20889;'}">-</div></div>
+                            <div class="col-md-4"><div class="text-secondary small">&#34218;&#36164;</div><div th:text="${employee.baseSalary}">-</div></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row g-3">
-            <div class="col-sm-6 col-lg-4"><a class="card module-card text-decoration-none h-100" th:href="@{/employee/profile(employeeNo=${employee.employeeNo})}"><div class="card-body"><h2 class="h5">个人信息</h2><p class="text-secondary mb-0">查看并修改电话、邮箱、地址</p></div></a></div>
-            <div class="col-sm-6 col-lg-4"><a class="card module-card text-decoration-none h-100" th:href="@{/employee/attendance(employeeNo=${employee.employeeNo})}"><div class="card-body"><h2 class="h5">出勤记录</h2><p class="text-secondary mb-0">查看自己的出勤明细</p></div></a></div>
-            <div class="col-sm-6 col-lg-4"><a class="card module-card text-decoration-none h-100" th:href="@{/employee/leave(employeeNo=${employee.employeeNo})}"><div class="card-body"><h2 class="h5">请假记录</h2><p class="text-secondary mb-0">查看自己的请假信息</p></div></a></div>
-            <div class="col-sm-6 col-lg-4"><a class="card module-card text-decoration-none h-100" th:href="@{/employee/overtime(employeeNo=${employee.employeeNo})}"><div class="card-body"><h2 class="h5">加班记录</h2><p class="text-secondary mb-0">查看自己的加班小时</p></div></a></div>
-            <div class="col-sm-6 col-lg-4"><a class="card module-card text-decoration-none h-100" th:href="@{/employee/trip(employeeNo=${employee.employeeNo})}"><div class="card-body"><h2 class="h5">出差记录</h2><p class="text-secondary mb-0">查看自己的出差信息</p></div></a></div>
-        </div>
+        </section>
+
+        <section>
+            <div class="section-title"><h2>&#24120;&#29992;&#21151;&#33021;</h2></div>
+            <div class="module-grid">
+                <a class="module-card p-4" th:href="@{/employee/profile(employeeNo=${employee.employeeNo})}">
+                    <div class="module-icon">&#20449;</div>
+                    <h3 class="h5">&#20010;&#20154;&#20449;&#24687;</h3>
+                    <p class="text-secondary mb-0">&#26597;&#30475;&#22522;&#26412;&#20449;&#24687;&#65292;&#32500;&#25252;&#30005;&#35805;&#12289;&#37038;&#31665;&#21644;&#22320;&#22336;</p>
+                </a>
+                <a class="module-card p-4" th:href="@{/employee/attendance(employeeNo=${employee.employeeNo})}">
+                    <div class="module-icon">&#21220;</div>
+                    <h3 class="h5">&#20986;&#21220;&#35760;&#24405;</h3>
+                    <p class="text-secondary mb-0">&#26597;&#30475;&#25105;&#30340;&#25171;&#21345;&#26085;&#26399;&#12289;&#26102;&#38388;&#21644;&#29366;&#24577;</p>
+                </a>
+                <a class="module-card p-4" th:href="@{/employee/leave(employeeNo=${employee.employeeNo})}">
+                    <div class="module-icon">&#20551;</div>
+                    <h3 class="h5">&#35831;&#20551;&#35760;&#24405;</h3>
+                    <p class="text-secondary mb-0">&#26597;&#30475;&#35831;&#20551;&#31867;&#22411;&#12289;&#22825;&#25968;&#21644;&#23457;&#26680;&#29366;&#24577;</p>
+                </a>
+                <a class="module-card p-4" th:href="@{/employee/overtime(employeeNo=${employee.employeeNo})}">
+                    <div class="module-icon">&#29677;</div>
+                    <h3 class="h5">&#21152;&#29677;&#35760;&#24405;</h3>
+                    <p class="text-secondary mb-0">&#26597;&#30475;&#21152;&#29677;&#26085;&#26399;&#12289;&#26102;&#38388;&#21644;&#23567;&#26102;</p>
+                </a>
+                <a class="module-card p-4" th:href="@{/employee/trip(employeeNo=${employee.employeeNo})}">
+                    <div class="module-icon">&#24046;</div>
+                    <h3 class="h5">&#20986;&#24046;&#35760;&#24405;</h3>
+                    <p class="text-secondary mb-0">&#26597;&#30475;&#20986;&#24046;&#22320;&#28857;&#12289;&#36215;&#27490;&#26085;&#26399;&#21644;&#22825;&#25968;</p>
+                </a>
+            </div>
+        </section>
     </div>
 </main>
+<footer class="app-footer">&#169; 2026 &#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479; &#124; &#21592;&#24037;&#31471;</footer>
 </body>
 </html>
