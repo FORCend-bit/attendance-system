@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.attendancesystem.mapper.BusinessTripRecordMapper">
+
+    <resultMap id="BusinessTripRecordResultMap" type="com.example.attendancesystem.entity.BusinessTripRecord">
+        <id property="id" column="id"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="destination" column="destination"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="days" column="days"/>
+        <result property="reason" column="reason"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="BusinessTripRecordVOResultMap" type="com.example.attendancesystem.vo.RecordVO">
+        <result property="employeeNo" column="employee_no"/>
+        <result property="employeeName" column="employee_name"/>
+        <result property="departmentName" column="department_name"/>
+        <association property="record" javaType="com.example.attendancesystem.entity.BusinessTripRecord" resultMap="BusinessTripRecordResultMap"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="BusinessTripRecordVOResultMap">
+        SELECT t.id, t.employee_id, t.destination, t.start_date, t.end_date,
+               t.days, t.reason, t.created_at, t.updated_at,
+               e.employee_no, e.name AS employee_name, d.department_name
+        FROM business_trip_record t
+        INNER JOIN employee e ON t.employee_id = e.id
+        LEFT JOIN department d ON e.department_id = d.id
+        <where>
+            AND e.status = '在职'
+            AND (t.reason IS NULL OR t.reason NOT LIKE '[已删除]%')
+            <if test="employeeNo != null and employeeNo != ''">
+                AND e.employee_no = #{employeeNo}
+            </if>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+            <if test="startDate != null">
+                AND t.start_date <![CDATA[>=]]> #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND t.end_date <![CDATA[<=]]> #{endDate}
+            </if>
+        </where>
+        ORDER BY t.start_date DESC, t.id DESC
+    </select>
+
+    <select id="findByEmployeeId" resultMap="BusinessTripRecordResultMap">
+        SELECT id, employee_id, destination, start_date, end_date, days, reason, created_at, updated_at
+        FROM business_trip_record
+        WHERE employee_id = #{employeeId}
+          AND (reason IS NULL OR reason NOT LIKE '[已删除]%')
+        ORDER BY start_date DESC
+    </select>
+
+    <select id="findById" resultMap="BusinessTripRecordResultMap">
+        SELECT id, employee_id, destination, start_date, end_date, days, reason, created_at, updated_at
+        FROM business_trip_record
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.example.attendancesystem.entity.BusinessTripRecord">
+        INSERT INTO business_trip_record (employee_id, destination, start_date, end_date, reason)
+        VALUES (#{employeeId}, #{destination}, #{startDate}, #{endDate}, #{reason})
+    </insert>
+
+    <update id="update" parameterType="com.example.attendancesystem.entity.BusinessTripRecord">
+        UPDATE business_trip_record
+        SET employee_id = #{employeeId},
+            destination = #{destination},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            reason = #{reason}
+        WHERE id = #{id}
+    </update>
+
+    <update id="logicalDelete">
+        UPDATE business_trip_record
+        SET reason = CONCAT('[已删除]', COALESCE(reason, ''))
+        WHERE id = #{id}
+    </update>
+</mapper>

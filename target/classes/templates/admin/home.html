@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>管理员端</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">员工考勤信息管理系统</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/employee}">员工端</a>
+        </div>
+    </div>
+</nav>
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">管理员端</h1>
+            <p class="text-secondary mb-0">员工、出勤、请假、加班、出差、综合查询与月度统计</p>
+        </div>
+    </div>
+    <section class="page-intro mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-lg-8">
+                <h2 class="h5">系统简介</h2>
+                <p class="text-secondary mb-0">本系统用于管理员维护员工基础信息、考勤记录、请假记录、加班记录和出差记录，并支持多条件综合查询和月度部门考勤统计。员工端通过工号进入，只能查看和维护自己的联系方式。</p>
+            </div>
+            <div class="col-lg-4">
+                <div class="row g-2 text-center">
+                    <div class="col-6"><div class="border rounded p-2 bg-light">Spring Boot</div></div>
+                    <div class="col-6"><div class="border rounded p-2 bg-light">MyBatis XML</div></div>
+                    <div class="col-6"><div class="border rounded p-2 bg-light">MySQL</div></div>
+                    <div class="col-6"><div class="border rounded p-2 bg-light">Thymeleaf</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/employee/list}"><div class="card-body"><h2 class="h5">员工管理</h2><p class="text-secondary mb-0">维护员工与薪资信息</p></div></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/attendance/list}"><div class="card-body"><h2 class="h5">出勤管理</h2><p class="text-secondary mb-0">登记出勤并自动判断状态</p></div></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/leave/list}"><div class="card-body"><h2 class="h5">请假管理</h2><p class="text-secondary mb-0">记录请假并计算天数</p></div></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/overtime/list}"><div class="card-body"><h2 class="h5">加班管理</h2><p class="text-secondary mb-0">记录加班并计算小时</p></div></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/trip/list}"><div class="card-body"><h2 class="h5">出差管理</h2><p class="text-secondary mb-0">记录出差并计算天数</p></div></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/search}"><div class="card-body"><h2 class="h5">综合查询</h2><p class="text-secondary mb-0">按工号、姓名、部门、时间查询</p></div></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/statistics}"><div class="card-body"><h2 class="h5">月度统计</h2><p class="text-secondary mb-0">按部门统计考勤数据</p></div></a></div>
+    </div>
+</main>
+</body>
+</html>

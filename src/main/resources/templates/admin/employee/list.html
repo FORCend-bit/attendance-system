@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>员工管理</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body>
+<nav class="navbar navbar-expand-lg bg-white border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/admin}">管理员端</a><a class="btn btn-outline-secondary btn-sm" th:href="@{/}">首页</a></div></nav>
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h3 mb-0">员工管理</h1><a class="btn btn-success" th:href="@{/admin/employee/add}">新增员工</a></div>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}"></div><div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <form class="card card-body mb-3" method="get" th:action="@{/admin/employee/list}">
+        <div class="row g-2">
+            <div class="col-md-3"><input class="form-control" name="employeeNo" th:value="${employeeNo}" placeholder="工号精确查询"></div>
+            <div class="col-md-3"><input class="form-control" name="name" th:value="${name}" placeholder="姓名模糊查询"></div>
+            <div class="col-md-3"><select class="form-select" name="departmentId"><option value="">全部部门</option><option th:each="d:${departments}" th:value="${d.id}" th:selected="${departmentId == d.id}" th:text="${d.departmentName}"></option></select></div>
+            <div class="col-md-3"><button class="btn btn-outline-primary w-100" type="submit">查询</button></div>
+        </div>
+    </form>
+    <div class="card"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>工号</th><th>姓名</th><th>部门</th><th>岗位</th><th>职务</th><th>薪资</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+        <tr th:each="e:${employees}">
+            <td th:text="${e.employeeNo}"></td><td th:text="${e.name}"></td><td th:text="${e.departmentName}"></td><td th:text="${e.positionName}"></td><td th:text="${e.titleName}"></td><td th:text="${e.baseSalary}"></td><td><span class="badge" th:classappend="${e.status == '在职'} ? ' text-bg-success' : ' text-bg-secondary'" th:text="${e.status}"></span></td>
+            <td class="text-nowrap"><a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/employee/detail(id=${e.id})}">详情</a> <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/employee/edit(id=${e.id})}">修改</a> <form class="d-inline" th:action="@{/admin/employee/resign}" method="post"><input type="hidden" name="id" th:value="${e.id}"><button class="btn btn-sm btn-outline-danger" type="submit">注销</button></form></td>
+        </tr>
+        <tr th:if="${employees == null or #lists.isEmpty(employees)}"><td colspan="8" class="text-center text-secondary py-4">暂无数据</td></tr>
+        </tbody></table></div></div>
+    <div class="text-secondary mt-3">共 <span th:text="${total}">0</span> 条，当前第 <span th:text="${page}">1</span> / <span th:text="${pages}">1</span> 页</div>
+</main></body></html>

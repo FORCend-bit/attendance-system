@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.attendancesystem.mapper.DepartmentMapper">
+
+    <resultMap id="DepartmentResultMap" type="com.example.attendancesystem.entity.Department">
+        <id property="id" column="id"/>
+        <result property="departmentCode" column="department_code"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="DepartmentResultMap">
+        SELECT id,
+               department_code,
+               department_name,
+               status,
+               created_at,
+               updated_at
+        FROM department
+        ORDER BY id
+    </select>
+
+    <select id="selectAll" resultMap="DepartmentResultMap">
+        SELECT id,
+               department_code,
+               department_name,
+               status,
+               created_at,
+               updated_at
+        FROM department
+        ORDER BY id
+    </select>
+
+</mapper>

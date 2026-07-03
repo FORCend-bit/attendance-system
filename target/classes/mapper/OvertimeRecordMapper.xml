@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.attendancesystem.mapper.OvertimeRecordMapper">
+
+    <resultMap id="OvertimeRecordResultMap" type="com.example.attendancesystem.entity.OvertimeRecord">
+        <id property="id" column="id"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="overtimeDate" column="overtime_date"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="hours" column="hours"/>
+        <result property="reason" column="reason"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="OvertimeRecordVOResultMap" type="com.example.attendancesystem.vo.RecordVO">
+        <result property="employeeNo" column="employee_no"/>
+        <result property="employeeName" column="employee_name"/>
+        <result property="departmentName" column="department_name"/>
+        <association property="record" javaType="com.example.attendancesystem.entity.OvertimeRecord" resultMap="OvertimeRecordResultMap"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="OvertimeRecordVOResultMap">
+        SELECT o.id, o.employee_id, o.overtime_date, o.start_time, o.end_time,
+               o.hours, o.reason, o.created_at, o.updated_at,
+               e.employee_no, e.name AS employee_name, d.department_name
+        FROM overtime_record o
+        INNER JOIN employee e ON o.employee_id = e.id
+        LEFT JOIN department d ON e.department_id = d.id
+        <where>
+            AND e.status = '在职'
+            AND (o.reason IS NULL OR o.reason NOT LIKE '[已删除]%')
+            <if test="employeeNo != null and employeeNo != ''">
+                AND e.employee_no = #{employeeNo}
+            </if>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+            <if test="startDate != null">
+                AND o.overtime_date <![CDATA[>=]]> #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.overtime_date <![CDATA[<=]]> #{endDate}
+            </if>
+        </where>
+        ORDER BY o.overtime_date DESC, o.id DESC
+    </select>
+
+    <select id="findByEmployeeId" resultMap="OvertimeRecordResultMap">
+        SELECT id, employee_id, overtime_date, start_time, end_time, hours, reason, created_at, updated_at
+        FROM overtime_record
+        WHERE employee_id = #{employeeId}
+          AND (reason IS NULL OR reason NOT LIKE '[已删除]%')
+        ORDER BY overtime_date DESC
+    </select>
+
+    <select id="findById" resultMap="OvertimeRecordResultMap">
+        SELECT id, employee_id, overtime_date, start_time, end_time, hours, reason, created_at, updated_at
+        FROM overtime_record
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.example.attendancesystem.entity.OvertimeRecord">
+        INSERT INTO overtime_record (employee_id, overtime_date, start_time, end_time, reason)
+        VALUES (#{employeeId}, #{overtimeDate}, #{startTime}, #{endTime}, #{reason})
+    </insert>
+
+    <update id="update" parameterType="com.example.attendancesystem.entity.OvertimeRecord">
+        UPDATE overtime_record
+        SET employee_id = #{employeeId},
+            overtime_date = #{overtimeDate},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            reason = #{reason}
+        WHERE id = #{id}
+    </update>
+
+    <update id="logicalDelete">
+        UPDATE overtime_record
+        SET reason = CONCAT('[已删除]', COALESCE(reason, ''))
+        WHERE id = #{id}
+    </update>
+</mapper>

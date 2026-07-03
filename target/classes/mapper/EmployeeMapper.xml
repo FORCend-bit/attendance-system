@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.attendancesystem.mapper.EmployeeMapper">
+
+    <resultMap id="EmployeeResultMap" type="com.example.attendancesystem.entity.Employee">
+        <id property="id" column="id"/>
+        <result property="employeeNo" column="employee_no"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="positionId" column="position_id"/>
+        <result property="jobTitleId" column="job_title_id"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="status" column="status"/>
+        <result property="resignDate" column="resign_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findByEmployeeNo" resultMap="EmployeeResultMap">
+        SELECT id,
+               employee_no,
+               name,
+               gender,
+               phone,
+               email,
+               address,
+               department_id,
+               position_id,
+               job_title_id,
+               hire_date,
+               status,
+               resign_date,
+               created_at,
+               updated_at
+        FROM employee
+        WHERE employee_no = #{employeeNo}
+          AND status = '在职'
+    </select>
+
+    <select id="selectByEmployeeNo" resultMap="EmployeeResultMap">
+        SELECT id,
+               employee_no,
+               name,
+               gender,
+               phone,
+               email,
+               address,
+               department_id,
+               position_id,
+               job_title_id,
+               hire_date,
+               status,
+               resign_date,
+               created_at,
+               updated_at
+        FROM employee
+        WHERE employee_no = #{employeeNo}
+          AND status = '在职'
+    </select>
+
+    <select id="findById" resultMap="EmployeeResultMap">
+        SELECT id,
+               employee_no,
+               name,
+               gender,
+               phone,
+               email,
+               address,
+               department_id,
+               position_id,
+               job_title_id,
+               hire_date,
+               status,
+               resign_date,
+               created_at,
+               updated_at
+        FROM employee
+        WHERE id = #{id}
+          AND status = '在职'
+    </select>
+
+    <resultMap id="EmployeeDetailResultMap" type="com.example.attendancesystem.vo.EmployeeDetailVO">
+        <id property="id" column="id"/>
+        <result property="employeeNo" column="employee_no"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="positionId" column="position_id"/>
+        <result property="positionName" column="position_name"/>
+        <result property="jobTitleId" column="job_title_id"/>
+        <result property="titleName" column="title_name"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="status" column="status"/>
+        <result property="resignDate" column="resign_date"/>
+        <result property="baseSalary" column="base_salary"/>
+        <result property="allowance" column="allowance"/>
+        <result property="effectiveDate" column="effective_date"/>
+    </resultMap>
+
+    <sql id="EmployeeDetailColumns">
+        e.id,
+        e.employee_no,
+        e.name,
+        e.gender,
+        e.phone,
+        e.email,
+        e.address,
+        e.department_id,
+        d.department_name,
+        e.position_id,
+        p.position_name,
+        e.job_title_id,
+        jt.title_name,
+        e.hire_date,
+        e.status,
+        e.resign_date,
+        s.base_salary,
+        s.allowance,
+        s.effective_date
+    </sql>
+
+    <sql id="EmployeeDetailFrom">
+        FROM employee e
+        LEFT JOIN department d ON e.department_id = d.id
+        LEFT JOIN position p ON e.position_id = p.id
+        LEFT JOIN job_title jt ON e.job_title_id = jt.id
+        LEFT JOIN employee_salary s ON e.id = s.employee_id
+    </sql>
+
+    <select id="findDetailById" resultMap="EmployeeDetailResultMap">
+        SELECT <include refid="EmployeeDetailColumns"/>
+        <include refid="EmployeeDetailFrom"/>
+        WHERE e.id = #{id}
+          AND e.status = '在职'
+    </select>
+
+    <select id="findDetailByEmployeeNo" resultMap="EmployeeDetailResultMap">
+        SELECT <include refid="EmployeeDetailColumns"/>
+        <include refid="EmployeeDetailFrom"/>
+        WHERE e.employee_no = #{employeeNo}
+          AND e.status = '在职'
+    </select>
+
+    <select id="findPage" resultMap="EmployeeDetailResultMap">
+        SELECT <include refid="EmployeeDetailColumns"/>
+        <include refid="EmployeeDetailFrom"/>
+        <where>
+            AND e.status = '在职'
+            <if test="employeeNo != null and employeeNo != ''">
+                AND e.employee_no = #{employeeNo}
+            </if>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+        </where>
+        ORDER BY e.id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(*)
+        FROM employee e
+        <where>
+            AND e.status = '在职'
+            <if test="employeeNo != null and employeeNo != ''">
+                AND e.employee_no = #{employeeNo}
+            </if>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="com.example.attendancesystem.entity.Employee" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO employee (
+            employee_no, name, gender, phone, email, address,
+            department_id, position_id, job_title_id, hire_date, status
+        ) VALUES (
+            #{employeeNo}, #{name}, #{gender}, #{phone}, #{email}, #{address},
+            #{departmentId}, #{positionId}, #{jobTitleId}, #{hireDate}, COALESCE(#{status}, '在职')
+        )
+    </insert>
+
+    <update id="update" parameterType="com.example.attendancesystem.entity.Employee">
+        UPDATE employee
+        SET name = #{name},
+            gender = #{gender},
+            phone = #{phone},
+            email = #{email},
+            address = #{address},
+            department_id = #{departmentId},
+            position_id = #{positionId},
+            job_title_id = #{jobTitleId},
+            hire_date = #{hireDate},
+            status = #{status},
+            resign_date = #{resignDate}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateContact" parameterType="com.example.attendancesystem.entity.Employee">
+        UPDATE employee
+        SET phone = #{phone},
+            email = #{email},
+            address = #{address}
+        WHERE id = #{id}
+    </update>
+
+    <update id="resign">
+        UPDATE employee
+        SET status = '已注销'
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>管理员首页</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/site.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-white">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="index.html">员工考勤信息管理系统</a>
+        <a class="btn btn-outline-secondary btn-sm" href="employee-entry.html">员工端</a>
+    </div>
+</nav>
+<main class="container py-4">
+    <div class="side-note mb-4">管理员端用于维护员工、出勤、请假、加班、出差数据，并进行综合查询和月度部门统计。</div>
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-employee-list.html"><h2 class="h5">员工管理</h2><p class="text-secondary mb-0">维护员工基础信息</p></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-attendance-list.html"><h2 class="h5">出勤管理</h2><p class="text-secondary mb-0">登记打卡与状态</p></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-leave-list.html"><h2 class="h5">请假管理</h2><p class="text-secondary mb-0">记录请假信息</p></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-overtime-list.html"><h2 class="h5">加班管理</h2><p class="text-secondary mb-0">统计加班小时</p></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-trip-list.html"><h2 class="h5">出差管理</h2><p class="text-secondary mb-0">维护出差记录</p></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-search.html"><h2 class="h5">综合查询</h2><p class="text-secondary mb-0">多条件组合检索</p></a></div>
+        <div class="col-sm-6 col-lg-3"><a class="module-card p-4" href="admin-statistics.html"><h2 class="h5">月度统计</h2><p class="text-secondary mb-0">分部门统计报表</p></a></div>
+    </div>
+</main>
+<footer class="page-footer">本页面为课程设计静态演示版，完整业务功能由 Spring Boot + MySQL 后端实现。</footer>
+</body>
+</html>

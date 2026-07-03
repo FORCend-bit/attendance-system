@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.attendancesystem.mapper.AttendanceRecordMapper">
+
+    <resultMap id="AttendanceRecordResultMap" type="com.example.attendancesystem.entity.AttendanceRecord">
+        <id property="id" column="id"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="attendanceDate" column="attendance_date"/>
+        <result property="checkInTime" column="check_in_time"/>
+        <result property="checkOutTime" column="check_out_time"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="AttendanceRecordVOResultMap" type="com.example.attendancesystem.vo.RecordVO">
+        <result property="employeeNo" column="employee_no"/>
+        <result property="employeeName" column="employee_name"/>
+        <result property="departmentName" column="department_name"/>
+        <association property="record" javaType="com.example.attendancesystem.entity.AttendanceRecord" resultMap="AttendanceRecordResultMap"/>
+    </resultMap>
+
+    <sql id="ListFrom">
+        FROM attendance_record a
+        INNER JOIN employee e ON a.employee_id = e.id
+        LEFT JOIN department d ON e.department_id = d.id
+    </sql>
+
+    <sql id="ListWhere">
+        <where>
+            AND e.status = '在职'
+            AND (a.remark IS NULL OR a.remark NOT LIKE '[已删除]%')
+            <if test="employeeNo != null and employeeNo != ''">
+                AND e.employee_no = #{employeeNo}
+            </if>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND e.department_id = #{departmentId}
+            </if>
+            <if test="startDate != null">
+                AND a.attendance_date <![CDATA[>=]]> #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND a.attendance_date <![CDATA[<=]]> #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findAll" resultMap="AttendanceRecordVOResultMap">
+        SELECT a.id, a.employee_id, a.attendance_date, a.check_in_time, a.check_out_time,
+               a.status, a.remark, a.created_at, a.updated_at,
+               e.employee_no, e.name AS employee_name, d.department_name
+        <include refid="ListFrom"/>
+        <include refid="ListWhere"/>
+        ORDER BY a.attendance_date DESC, a.id DESC
+    </select>
+
+    <select id="findByEmployeeId" resultMap="AttendanceRecordResultMap">
+        SELECT id, employee_id, attendance_date, check_in_time, check_out_time, status, remark, created_at, updated_at
+        FROM attendance_record
+        WHERE employee_id = #{employeeId}
+          AND (remark IS NULL OR remark NOT LIKE '[已删除]%')
+        ORDER BY attendance_date DESC
+    </select>
+
+    <select id="findById" resultMap="AttendanceRecordResultMap">
+        SELECT id, employee_id, attendance_date, check_in_time, check_out_time, status, remark, created_at, updated_at
+        FROM attendance_record
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.example.attendancesystem.entity.AttendanceRecord">
+        INSERT INTO attendance_record (employee_id, attendance_date, check_in_time, check_out_time, status, remark)
+        VALUES (#{employeeId}, #{attendanceDate}, #{checkInTime}, #{checkOutTime}, #{status}, #{remark})
+    </insert>
+
+    <update id="update" parameterType="com.example.attendancesystem.entity.AttendanceRecord">
+        UPDATE attendance_record
+        SET employee_id = #{employeeId},
+            attendance_date = #{attendanceDate},
+            check_in_time = #{checkInTime},
+            check_out_time = #{checkOutTime},
+            status = #{status},
+            remark = #{remark}
+        WHERE id = #{id}
+    </update>
+
+    <update id="logicalDelete">
+        UPDATE attendance_record
+        SET remark = CONCAT('[已删除]', COALESCE(remark, ''))
+        WHERE id = #{id}
+    </update>
+</mapper>

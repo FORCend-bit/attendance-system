@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.attendancesystem.mapper.StatisticsMapper">
+
+    <resultMap id="MonthlyStatisticsResultMap" type="com.example.attendancesystem.vo.MonthlyStatisticsVO">
+        <result property="yearMonth" column="year_month"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="employeeCount" column="employee_count"/>
+        <result property="normalCount" column="normal_count"/>
+        <result property="lateCount" column="late_count"/>
+        <result property="absentCount" column="absent_count"/>
+        <result property="leaveDays" column="leave_days"/>
+        <result property="overtimeHours" column="overtime_hours"/>
+        <result property="tripDays" column="trip_days"/>
+    </resultMap>
+
+    <select id="monthlyByDepartment" resultMap="MonthlyStatisticsResultMap">
+        SELECT #{yearMonth} AS `year_month`,
+               d.id AS department_id,
+               d.department_name,
+               COUNT(e.id) AS employee_count,
+               COALESCE(a.normal_count, 0) AS normal_count,
+               COALESCE(a.late_count, 0) AS late_count,
+               COALESCE(a.absent_count, 0) AS absent_count,
+               COALESCE(l.leave_days, 0) AS leave_days,
+               COALESCE(o.overtime_hours, 0) AS overtime_hours,
+               COALESCE(t.trip_days, 0) AS trip_days
+        FROM department d
+        LEFT JOIN employee e ON e.department_id = d.id AND e.status = '在职'
+        LEFT JOIN (
+            SELECT e.department_id,
+                   SUM(CASE WHEN a.status = '正常' THEN 1 ELSE 0 END) AS normal_count,
+                   SUM(CASE WHEN a.status = '迟到' THEN 1 ELSE 0 END) AS late_count,
+                   SUM(CASE WHEN a.status = '缺勤' THEN 1 ELSE 0 END) AS absent_count
+            FROM attendance_record a
+            INNER JOIN employee e ON a.employee_id = e.id
+            WHERE DATE_FORMAT(a.attendance_date, '%Y-%m') = #{yearMonth}
+              AND e.status = '在职'
+              AND (a.remark IS NULL OR a.remark NOT LIKE '[已删除]%')
+            GROUP BY e.department_id
+        ) a ON a.department_id = d.id
+        LEFT JOIN (
+            SELECT e.department_id, SUM(l.days) AS leave_days
+            FROM leave_record l
+            INNER JOIN employee e ON l.employee_id = e.id
+            WHERE DATE_FORMAT(l.start_time, '%Y-%m') = #{yearMonth}
+              AND e.status = '在职'
+              AND l.status != '已取消'
+            GROUP BY e.department_id
+        ) l ON l.department_id = d.id
+        LEFT JOIN (
+            SELECT e.department_id, SUM(o.hours) AS overtime_hours
+            FROM overtime_record o
+            INNER JOIN employee e ON o.employee_id = e.id
+            WHERE DATE_FORMAT(o.overtime_date, '%Y-%m') = #{yearMonth}
+              AND e.status = '在职'
+              AND (o.reason IS NULL OR o.reason NOT LIKE '[已删除]%')
+            GROUP BY e.department_id
+        ) o ON o.department_id = d.id
+        LEFT JOIN (
+            SELECT e.department_id, SUM(t.days) AS trip_days
+            FROM business_trip_record t
+            INNER JOIN employee e ON t.employee_id = e.id
+            WHERE DATE_FORMAT(t.start_date, '%Y-%m') = #{yearMonth}
+              AND e.status = '在职'
+              AND (t.reason IS NULL OR t.reason NOT LIKE '[已删除]%')
+            GROUP BY e.department_id
+        ) t ON t.department_id = d.id
+        GROUP BY d.id, d.department_name, a.normal_count, a.late_count, a.absent_count,
+                 l.leave_days, o.overtime_hours, t.trip_days
+        ORDER BY d.id
+    </select>
+</mapper>
