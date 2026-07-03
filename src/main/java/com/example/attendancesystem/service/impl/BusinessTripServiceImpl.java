@@ -46,11 +46,13 @@ public class BusinessTripServiceImpl implements BusinessTripService {
 
     @Override
     public void save(BusinessTripRecord record) {
+        prepare(record);
         businessTripRecordMapper.insert(record);
     }
 
     @Override
     public void update(BusinessTripRecord record) {
+        prepare(record);
         businessTripRecordMapper.update(record);
     }
 
@@ -59,6 +61,26 @@ public class BusinessTripServiceImpl implements BusinessTripService {
         if (id != null) {
             businessTripRecordMapper.logicalDelete(id);
         }
+    }
+
+    private void prepare(BusinessTripRecord record) {
+        if (record == null) {
+            throw new IllegalArgumentException("\u51fa\u5dee\u8bb0\u5f55\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEmployeeId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u5458\u5de5");
+        }
+        if (clean(record.getDestination()) == null) {
+            throw new IllegalArgumentException("\u51fa\u5dee\u5730\u70b9\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getStartDate() == null || record.getEndDate() == null) {
+            throw new IllegalArgumentException("\u51fa\u5dee\u5f00\u59cb\u548c\u7ed3\u675f\u65e5\u671f\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEndDate().isBefore(record.getStartDate())) {
+            throw new IllegalArgumentException("\u51fa\u5dee\u7ed3\u675f\u65e5\u671f\u4e0d\u80fd\u65e9\u4e8e\u5f00\u59cb\u65e5\u671f");
+        }
+        record.setDestination(clean(record.getDestination()));
+        record.setReason(clean(record.getReason()));
     }
 
     private String clean(String value) {

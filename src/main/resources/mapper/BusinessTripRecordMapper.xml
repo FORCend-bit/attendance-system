@@ -4,6 +4,9 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.attendancesystem.mapper.BusinessTripRecordMapper">
 
+    <sql id="statusActive">CONVERT(0xE59CA8E8818C USING utf8mb4)</sql>
+    <sql id="deletedPrefix">CONVERT(0x5BE5B7B2E588A0E999A45D USING utf8mb4)</sql>
+
     <resultMap id="BusinessTripRecordResultMap" type="com.example.attendancesystem.entity.BusinessTripRecord">
         <id property="id" column="id"/>
         <result property="employeeId" column="employee_id"/>
@@ -31,8 +34,8 @@
         INNER JOIN employee e ON t.employee_id = e.id
         LEFT JOIN department d ON e.department_id = d.id
         <where>
-            AND e.status = '在职'
-            AND (t.reason IS NULL OR t.reason NOT LIKE '[已删除]%')
+            AND e.status = <include refid="statusActive"/>
+            AND (t.reason IS NULL OR t.reason NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
             <if test="employeeNo != null and employeeNo != ''">
                 AND e.employee_no = #{employeeNo}
             </if>
@@ -56,7 +59,7 @@
         SELECT id, employee_id, destination, start_date, end_date, days, reason, created_at, updated_at
         FROM business_trip_record
         WHERE employee_id = #{employeeId}
-          AND (reason IS NULL OR reason NOT LIKE '[已删除]%')
+          AND (reason IS NULL OR reason NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
         ORDER BY start_date DESC
     </select>
 
@@ -83,7 +86,7 @@
 
     <update id="logicalDelete">
         UPDATE business_trip_record
-        SET reason = CONCAT('[已删除]', COALESCE(reason, ''))
+        SET reason = CONCAT(<include refid="deletedPrefix"/>, COALESCE(reason, ''))
         WHERE id = #{id}
     </update>
 </mapper>

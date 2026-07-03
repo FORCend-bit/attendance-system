@@ -19,6 +19,8 @@ public class MonthlyStatisticsVO {
 
     private Integer lateCount;
 
+    private Integer earlyLeaveCount;
+
     private Integer absentCount;
 
     private BigDecimal leaveDays;

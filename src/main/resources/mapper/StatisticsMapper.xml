@@ -5,12 +5,13 @@
 <mapper namespace="com.example.attendancesystem.mapper.StatisticsMapper">
 
     <resultMap id="MonthlyStatisticsResultMap" type="com.example.attendancesystem.vo.MonthlyStatisticsVO">
-        <result property="yearMonth" column="year_month"/>
+        <result property="yearMonth" column="stat_year_month"/>
         <result property="departmentId" column="department_id"/>
         <result property="departmentName" column="department_name"/>
         <result property="employeeCount" column="employee_count"/>
         <result property="normalCount" column="normal_count"/>
         <result property="lateCount" column="late_count"/>
+        <result property="earlyLeaveCount" column="early_leave_count"/>
         <result property="absentCount" column="absent_count"/>
         <result property="leaveDays" column="leave_days"/>
         <result property="overtimeHours" column="overtime_hours"/>
@@ -18,28 +19,32 @@
     </resultMap>
 
     <select id="monthlyByDepartment" resultMap="MonthlyStatisticsResultMap">
-        SELECT #{yearMonth} AS `year_month`,
+        SELECT CAST(#{yearMonth} AS CHAR) AS stat_year_month,
                d.id AS department_id,
                d.department_name,
                COUNT(e.id) AS employee_count,
                COALESCE(a.normal_count, 0) AS normal_count,
                COALESCE(a.late_count, 0) AS late_count,
+               COALESCE(a.early_leave_count, 0) AS early_leave_count,
                COALESCE(a.absent_count, 0) AS absent_count,
                COALESCE(l.leave_days, 0) AS leave_days,
                COALESCE(o.overtime_hours, 0) AS overtime_hours,
                COALESCE(t.trip_days, 0) AS trip_days
         FROM department d
-        LEFT JOIN employee e ON e.department_id = d.id AND e.status = '在职'
+        LEFT JOIN employee e
+               ON e.department_id = d.id
+              AND e.status = CONVERT(0xE59CA8E8818C USING utf8mb4)
         LEFT JOIN (
             SELECT e.department_id,
-                   SUM(CASE WHEN a.status = '正常' THEN 1 ELSE 0 END) AS normal_count,
-                   SUM(CASE WHEN a.status = '迟到' THEN 1 ELSE 0 END) AS late_count,
-                   SUM(CASE WHEN a.status = '缺勤' THEN 1 ELSE 0 END) AS absent_count
+                   SUM(CASE WHEN a.status = CONVERT(0xE6ADA3E5B8B8 USING utf8mb4) THEN 1 ELSE 0 END) AS normal_count,
+                   SUM(CASE WHEN a.status = CONVERT(0xE8BF9FE588B0 USING utf8mb4) THEN 1 ELSE 0 END) AS late_count,
+                   SUM(CASE WHEN a.status = CONVERT(0xE697A9E98080 USING utf8mb4) THEN 1 ELSE 0 END) AS early_leave_count,
+                   SUM(CASE WHEN a.status = CONVERT(0xE7BCBAE58BA4 USING utf8mb4) THEN 1 ELSE 0 END) AS absent_count
             FROM attendance_record a
             INNER JOIN employee e ON a.employee_id = e.id
             WHERE DATE_FORMAT(a.attendance_date, '%Y-%m') = #{yearMonth}
-              AND e.status = '在职'
-              AND (a.remark IS NULL OR a.remark NOT LIKE '[已删除]%')
+              AND e.status = CONVERT(0xE59CA8E8818C USING utf8mb4)
+              AND (a.remark IS NULL OR a.remark NOT LIKE CONCAT(CONVERT(0x5BE5B7B2E588A0E999A45D USING utf8mb4), '%'))
             GROUP BY e.department_id
         ) a ON a.department_id = d.id
         LEFT JOIN (
@@ -47,8 +52,8 @@
             FROM leave_record l
             INNER JOIN employee e ON l.employee_id = e.id
             WHERE DATE_FORMAT(l.start_time, '%Y-%m') = #{yearMonth}
-              AND e.status = '在职'
-              AND l.status != '已取消'
+              AND e.status = CONVERT(0xE59CA8E8818C USING utf8mb4)
+              AND l.status != CONVERT(0xE5B7B2E58F96E6B688 USING utf8mb4)
             GROUP BY e.department_id
         ) l ON l.department_id = d.id
         LEFT JOIN (
@@ -56,8 +61,8 @@
             FROM overtime_record o
             INNER JOIN employee e ON o.employee_id = e.id
             WHERE DATE_FORMAT(o.overtime_date, '%Y-%m') = #{yearMonth}
-              AND e.status = '在职'
-              AND (o.reason IS NULL OR o.reason NOT LIKE '[已删除]%')
+              AND e.status = CONVERT(0xE59CA8E8818C USING utf8mb4)
+              AND (o.reason IS NULL OR o.reason NOT LIKE CONCAT(CONVERT(0x5BE5B7B2E588A0E999A45D USING utf8mb4), '%'))
             GROUP BY e.department_id
         ) o ON o.department_id = d.id
         LEFT JOIN (
@@ -65,11 +70,11 @@
             FROM business_trip_record t
             INNER JOIN employee e ON t.employee_id = e.id
             WHERE DATE_FORMAT(t.start_date, '%Y-%m') = #{yearMonth}
-              AND e.status = '在职'
-              AND (t.reason IS NULL OR t.reason NOT LIKE '[已删除]%')
+              AND e.status = CONVERT(0xE59CA8E8818C USING utf8mb4)
+              AND (t.reason IS NULL OR t.reason NOT LIKE CONCAT(CONVERT(0x5BE5B7B2E588A0E999A45D USING utf8mb4), '%'))
             GROUP BY e.department_id
         ) t ON t.department_id = d.id
-        GROUP BY d.id, d.department_name, a.normal_count, a.late_count, a.absent_count,
+        GROUP BY d.id, d.department_name, a.normal_count, a.late_count, a.early_leave_count, a.absent_count,
                  l.leave_days, o.overtime_hours, t.trip_days
         ORDER BY d.id
     </select>

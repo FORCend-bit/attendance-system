@@ -19,6 +19,8 @@ public interface LeaveRecordMapper {
 
     LeaveRecord findById(@Param("id") Long id);
 
+    java.math.BigDecimal sumDaysInMonth(@Param("yearMonth") String yearMonth);
+
     int insert(LeaveRecord record);
 
     int update(LeaveRecord record);

@@ -4,6 +4,10 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.attendancesystem.mapper.AttendanceRecordMapper">
 
+    <sql id="statusActive">CONVERT(0xE59CA8E8818C USING utf8mb4)</sql>
+    <sql id="statusLate">CONVERT(0xE8BF9FE588B0 USING utf8mb4)</sql>
+    <sql id="deletedPrefix">CONVERT(0x5BE5B7B2E588A0E999A45D USING utf8mb4)</sql>
+
     <resultMap id="AttendanceRecordResultMap" type="com.example.attendancesystem.entity.AttendanceRecord">
         <id property="id" column="id"/>
         <result property="employeeId" column="employee_id"/>
@@ -31,8 +35,8 @@
 
     <sql id="ListWhere">
         <where>
-            AND e.status = '在职'
-            AND (a.remark IS NULL OR a.remark NOT LIKE '[已删除]%')
+            AND e.status = <include refid="statusActive"/>
+            AND (a.remark IS NULL OR a.remark NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
             <if test="employeeNo != null and employeeNo != ''">
                 AND e.employee_no = #{employeeNo}
             </if>
@@ -64,7 +68,7 @@
         SELECT id, employee_id, attendance_date, check_in_time, check_out_time, status, remark, created_at, updated_at
         FROM attendance_record
         WHERE employee_id = #{employeeId}
-          AND (remark IS NULL OR remark NOT LIKE '[已删除]%')
+          AND (remark IS NULL OR remark NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
         ORDER BY attendance_date DESC
     </select>
 
@@ -72,6 +76,16 @@
         SELECT id, employee_id, attendance_date, check_in_time, check_out_time, status, remark, created_at, updated_at
         FROM attendance_record
         WHERE id = #{id}
+    </select>
+
+    <select id="countLateInMonth" resultType="int">
+        SELECT COUNT(*)
+        FROM attendance_record a
+        INNER JOIN employee e ON a.employee_id = e.id
+        WHERE DATE_FORMAT(a.attendance_date, '%Y-%m') = #{yearMonth}
+          AND a.status = <include refid="statusLate"/>
+          AND e.status = <include refid="statusActive"/>
+          AND (a.remark IS NULL OR a.remark NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
     </select>
 
     <insert id="insert" parameterType="com.example.attendancesystem.entity.AttendanceRecord">
@@ -92,7 +106,7 @@
 
     <update id="logicalDelete">
         UPDATE attendance_record
-        SET remark = CONCAT('[已删除]', COALESCE(remark, ''))
+        SET remark = CONCAT(<include refid="deletedPrefix"/>, COALESCE(remark, ''))
         WHERE id = #{id}
     </update>
 </mapper>

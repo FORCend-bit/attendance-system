@@ -4,6 +4,9 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.attendancesystem.mapper.EmployeeMapper">
 
+    <sql id="statusActive">CONVERT(0xE59CA8E8818C USING utf8mb4)</sql>
+    <sql id="statusResigned">CONVERT(0xE5B7B2E6B3A8E99480 USING utf8mb4)</sql>
+
     <resultMap id="EmployeeResultMap" type="com.example.attendancesystem.entity.Employee">
         <id property="id" column="id"/>
         <result property="employeeNo" column="employee_no"/>
@@ -23,66 +26,29 @@
     </resultMap>
 
     <select id="findByEmployeeNo" resultMap="EmployeeResultMap">
-        SELECT id,
-               employee_no,
-               name,
-               gender,
-               phone,
-               email,
-               address,
-               department_id,
-               position_id,
-               job_title_id,
-               hire_date,
-               status,
-               resign_date,
-               created_at,
-               updated_at
+        SELECT id, employee_no, name, gender, phone, email, address,
+               department_id, position_id, job_title_id, hire_date,
+               status, resign_date, created_at, updated_at
         FROM employee
         WHERE employee_no = #{employeeNo}
-          AND status = '在职'
+          AND status = <include refid="statusActive"/>
     </select>
 
     <select id="selectByEmployeeNo" resultMap="EmployeeResultMap">
-        SELECT id,
-               employee_no,
-               name,
-               gender,
-               phone,
-               email,
-               address,
-               department_id,
-               position_id,
-               job_title_id,
-               hire_date,
-               status,
-               resign_date,
-               created_at,
-               updated_at
+        SELECT id, employee_no, name, gender, phone, email, address,
+               department_id, position_id, job_title_id, hire_date,
+               status, resign_date, created_at, updated_at
         FROM employee
         WHERE employee_no = #{employeeNo}
-          AND status = '在职'
+          AND status = <include refid="statusActive"/>
     </select>
 
     <select id="findById" resultMap="EmployeeResultMap">
-        SELECT id,
-               employee_no,
-               name,
-               gender,
-               phone,
-               email,
-               address,
-               department_id,
-               position_id,
-               job_title_id,
-               hire_date,
-               status,
-               resign_date,
-               created_at,
-               updated_at
+        SELECT id, employee_no, name, gender, phone, email, address,
+               department_id, position_id, job_title_id, hire_date,
+               status, resign_date, created_at, updated_at
         FROM employee
         WHERE id = #{id}
-          AND status = '在职'
     </select>
 
     <resultMap id="EmployeeDetailResultMap" type="com.example.attendancesystem.vo.EmployeeDetailVO">
@@ -141,21 +107,19 @@
         SELECT <include refid="EmployeeDetailColumns"/>
         <include refid="EmployeeDetailFrom"/>
         WHERE e.id = #{id}
-          AND e.status = '在职'
     </select>
 
     <select id="findDetailByEmployeeNo" resultMap="EmployeeDetailResultMap">
         SELECT <include refid="EmployeeDetailColumns"/>
         <include refid="EmployeeDetailFrom"/>
         WHERE e.employee_no = #{employeeNo}
-          AND e.status = '在职'
+          AND e.status = <include refid="statusActive"/>
     </select>
 
     <select id="findPage" resultMap="EmployeeDetailResultMap">
         SELECT <include refid="EmployeeDetailColumns"/>
         <include refid="EmployeeDetailFrom"/>
         <where>
-            AND e.status = '在职'
             <if test="employeeNo != null and employeeNo != ''">
                 AND e.employee_no = #{employeeNo}
             </if>
@@ -174,7 +138,6 @@
         SELECT COUNT(*)
         FROM employee e
         <where>
-            AND e.status = '在职'
             <if test="employeeNo != null and employeeNo != ''">
                 AND e.employee_no = #{employeeNo}
             </if>
@@ -187,13 +150,25 @@
         </where>
     </select>
 
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM employee
+    </select>
+
+    <select id="countActive" resultType="int">
+        SELECT COUNT(*) FROM employee WHERE status = <include refid="statusActive"/>
+    </select>
+
+    <select id="countResigned" resultType="int">
+        SELECT COUNT(*) FROM employee WHERE status = <include refid="statusResigned"/>
+    </select>
+
     <insert id="insert" parameterType="com.example.attendancesystem.entity.Employee" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO employee (
             employee_no, name, gender, phone, email, address,
             department_id, position_id, job_title_id, hire_date, status
         ) VALUES (
             #{employeeNo}, #{name}, #{gender}, #{phone}, #{email}, #{address},
-            #{departmentId}, #{positionId}, #{jobTitleId}, #{hireDate}, COALESCE(#{status}, '在职')
+            #{departmentId}, #{positionId}, #{jobTitleId}, #{hireDate}, COALESCE(#{status}, <include refid="statusActive"/>)
         )
     </insert>
 
@@ -223,7 +198,7 @@
 
     <update id="resign">
         UPDATE employee
-        SET status = '已注销'
+        SET status = <include refid="statusResigned"/>
         WHERE id = #{id}
     </update>
 

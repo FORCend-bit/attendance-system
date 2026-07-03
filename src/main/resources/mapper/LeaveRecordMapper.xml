@@ -4,6 +4,10 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.attendancesystem.mapper.LeaveRecordMapper">
 
+    <sql id="statusActive">CONVERT(0xE59CA8E8818C USING utf8mb4)</sql>
+    <sql id="statusCanceled">CONVERT(0xE5B7B2E58F96E6B688 USING utf8mb4)</sql>
+    <sql id="statusRecorded">CONVERT(0xE5B7B2E8AEB0E5BD95 USING utf8mb4)</sql>
+
     <resultMap id="LeaveRecordResultMap" type="com.example.attendancesystem.entity.LeaveRecord">
         <id property="id" column="id"/>
         <result property="employeeId" column="employee_id"/>
@@ -32,8 +36,8 @@
         INNER JOIN employee e ON l.employee_id = e.id
         LEFT JOIN department d ON e.department_id = d.id
         <where>
-            AND e.status = '在职'
-            AND l.status != '已取消'
+            AND e.status = <include refid="statusActive"/>
+            AND l.status != <include refid="statusCanceled"/>
             <if test="employeeNo != null and employeeNo != ''">
                 AND e.employee_no = #{employeeNo}
             </if>
@@ -57,7 +61,7 @@
         SELECT id, employee_id, leave_type, start_time, end_time, days, reason, status, created_at, updated_at
         FROM leave_record
         WHERE employee_id = #{employeeId}
-          AND status != '已取消'
+          AND status != <include refid="statusCanceled"/>
         ORDER BY start_time DESC
     </select>
 
@@ -67,9 +71,18 @@
         WHERE id = #{id}
     </select>
 
+    <select id="sumDaysInMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(l.days), 0)
+        FROM leave_record l
+        INNER JOIN employee e ON l.employee_id = e.id
+        WHERE DATE_FORMAT(l.start_time, '%Y-%m') = #{yearMonth}
+          AND e.status = <include refid="statusActive"/>
+          AND l.status != <include refid="statusCanceled"/>
+    </select>
+
     <insert id="insert" parameterType="com.example.attendancesystem.entity.LeaveRecord">
         INSERT INTO leave_record (employee_id, leave_type, start_time, end_time, reason, status)
-        VALUES (#{employeeId}, #{leaveType}, #{startTime}, #{endTime}, #{reason}, COALESCE(#{status}, '已记录'))
+        VALUES (#{employeeId}, #{leaveType}, #{startTime}, #{endTime}, #{reason}, COALESCE(#{status}, <include refid="statusRecorded"/>))
     </insert>
 
     <update id="update" parameterType="com.example.attendancesystem.entity.LeaveRecord">
@@ -85,7 +98,7 @@
 
     <update id="logicalDelete">
         UPDATE leave_record
-        SET status = '已取消'
+        SET status = <include refid="statusCanceled"/>
         WHERE id = #{id}
     </update>
 </mapper>

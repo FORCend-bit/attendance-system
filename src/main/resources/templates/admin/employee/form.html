@@ -1,30 +1,106 @@
 <!doctype html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>员工表单</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>&#21592;&#24037;&#34920;&#21333;</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/admin}">管理员端</a><a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/employee/list}">返回员工列表</a></div></nav>
+<nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">&#31649;&#29702;&#21592;&#31471;</a>
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/employee/list}">&#36820;&#22238;&#21592;&#24037;&#21015;&#34920;</a>
+    </div>
+</nav>
 <main class="container py-4">
-    <h1 class="h3 mb-3" th:text="${employee != null and employee.id != null} ? '修改员工' : '新增员工'">员工表单</h1>
+    <h1 class="h3 mb-3" th:text="${employee != null and employee.id != null} ? '&#20462;&#25913;&#21592;&#24037;' : '&#26032;&#22686;&#21592;&#24037;'">&#21592;&#24037;&#34920;&#21333;</h1>
     <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
     <form class="card card-body" th:object="${employee}" th:action="${employee != null and employee.id != null} ? @{/admin/employee/edit} : @{/admin/employee/add}" method="post">
         <input type="hidden" th:field="*{id}">
         <div class="row g-3">
-            <div class="col-md-3"><label class="form-label">工号</label><input class="form-control" th:field="*{employeeNo}" required></div>
-            <div class="col-md-3"><label class="form-label">姓名</label><input class="form-control" th:field="*{name}" required></div>
-            <div class="col-md-3"><label class="form-label">性别</label><select class="form-select" th:field="*{gender}"><option value="男">男</option><option value="女">女</option></select></div>
-            <div class="col-md-3"><label class="form-label">状态</label><select class="form-select" th:field="*{status}"><option value="在职">在职</option><option value="已注销">已注销</option></select></div>
-            <div class="col-md-4"><label class="form-label">部门</label><select class="form-select" th:field="*{departmentId}" required><option value="">请选择</option><option th:each="d:${departments}" th:value="${d.id}" th:text="${d.departmentName}"></option></select></div>
-            <div class="col-md-4"><label class="form-label">岗位</label><select class="form-select" th:field="*{positionId}" required><option value="">请选择</option><option th:each="p:${positions}" th:value="${p.id}" th:text="${p.positionName}"></option></select></div>
-            <div class="col-md-4"><label class="form-label">职务</label><select class="form-select" th:field="*{jobTitleId}" required><option value="">请选择</option><option th:each="j:${jobTitles}" th:value="${j.id}" th:text="${j.titleName}"></option></select></div>
-            <div class="col-md-4"><label class="form-label">入职日期</label><input class="form-control" type="date" th:field="*{hireDate}" required></div>
-            <div class="col-md-4"><label class="form-label">离职日期</label><input class="form-control" type="date" th:field="*{resignDate}"></div>
-            <div class="col-md-4"><label class="form-label">电话</label><input class="form-control" th:field="*{phone}"></div>
-            <div class="col-md-6"><label class="form-label">邮箱</label><input class="form-control" th:field="*{email}"></div>
-            <div class="col-md-6"><label class="form-label">地址</label><input class="form-control" th:field="*{address}"></div>
-            <div class="col-md-4"><label class="form-label">基本工资</label><input class="form-control" name="baseSalary" th:value="${salary == null ? 0 : salary.baseSalary}" type="number" step="0.01"></div>
-            <div class="col-md-4"><label class="form-label">补贴</label><input class="form-control" name="allowance" th:value="${salary == null ? 0 : salary.allowance}" type="number" step="0.01"></div>
-            <div class="col-md-4"><label class="form-label">薪资生效日期</label><input class="form-control" name="effectiveDate" th:value="${salary == null ? null : salary.effectiveDate}" type="date"></div>
+            <div class="col-md-3">
+                <label class="form-label">&#24037;&#21495;</label>
+                <input class="form-control" th:field="*{employeeNo}" maxlength="30" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&#22995;&#21517;</label>
+                <input class="form-control" th:field="*{name}" maxlength="50" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&#24615;&#21035;</label>
+                <select class="form-select" th:field="*{gender}" required>
+                    <option value="&#30007;">&#30007;</option>
+                    <option value="&#22899;">&#22899;</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&#29366;&#24577;</label>
+                <select class="form-select" th:field="*{status}">
+                    <option value="&#22312;&#32844;">&#22312;&#32844;</option>
+                    <option value="&#24050;&#27880;&#38144;">&#24050;&#27880;&#38144;</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#37096;&#38376;</label>
+                <select class="form-select" th:field="*{departmentId}" required>
+                    <option value="">&#35831;&#36873;&#25321;</option>
+                    <option th:each="d:${departments}" th:value="${d.id}" th:text="${d.departmentName}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#23703;&#20301;</label>
+                <select class="form-select" th:field="*{positionId}" required>
+                    <option value="">&#35831;&#36873;&#25321;</option>
+                    <option th:each="p:${positions}" th:value="${p.id}" th:text="${p.positionName}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#32844;&#21153;</label>
+                <select class="form-select" th:field="*{jobTitleId}" required>
+                    <option value="">&#35831;&#36873;&#25321;</option>
+                    <option th:each="j:${jobTitles}" th:value="${j.id}" th:text="${j.titleName}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#20837;&#32844;&#26085;&#26399;</label>
+                <input class="form-control" type="date" th:field="*{hireDate}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#31163;&#32844;&#26085;&#26399;</label>
+                <input class="form-control" type="date" th:field="*{resignDate}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#30005;&#35805;</label>
+                <input class="form-control" th:field="*{phone}" maxlength="30">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">&#37038;&#31665;</label>
+                <input class="form-control" type="email" th:field="*{email}" maxlength="80">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">&#22320;&#22336;</label>
+                <input class="form-control" th:field="*{address}" maxlength="200">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#22522;&#26412;&#24037;&#36164;</label>
+                <input class="form-control" name="baseSalary" th:value="${salary == null or salary.baseSalary == null ? 0 : salary.baseSalary}" type="number" min="0" max="99999999.99" step="0.01" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#34917;&#36148;</label>
+                <input class="form-control" name="allowance" th:value="${salary == null or salary.allowance == null ? 0 : salary.allowance}" type="number" min="0" max="99999999.99" step="0.01">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&#34218;&#36164;&#29983;&#25928;&#26085;&#26399;</label>
+                <input class="form-control" name="effectiveDate" th:value="${salary == null ? null : salary.effectiveDate}" type="date" required>
+            </div>
         </div>
-        <div class="mt-4"><button class="btn btn-success" type="submit">保存</button></div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-success" type="submit">&#20445;&#23384;</button>
+            <a class="btn btn-outline-secondary" th:href="@{/admin/employee/list}">&#21462;&#28040;</a>
+        </div>
     </form>
-</main></body></html>
+</main>
+</body>
+</html>

@@ -19,6 +19,8 @@ public interface AttendanceRecordMapper {
 
     AttendanceRecord findById(@Param("id") Long id);
 
+    int countLateInMonth(@Param("yearMonth") String yearMonth);
+
     int insert(AttendanceRecord record);
 
     int update(AttendanceRecord record);

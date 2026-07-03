@@ -19,6 +19,8 @@ public interface OvertimeRecordMapper {
 
     OvertimeRecord findById(@Param("id") Long id);
 
+    java.math.BigDecimal sumHoursInMonth(@Param("yearMonth") String yearMonth);
+
     int insert(OvertimeRecord record);
 
     int update(OvertimeRecord record);

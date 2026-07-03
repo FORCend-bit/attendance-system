@@ -65,10 +65,24 @@ public class LeaveServiceImpl implements LeaveService {
 
     private void prepare(LeaveRecord record) {
         if (record == null) {
-            throw new IllegalArgumentException("请假记录不能为空");
+            throw new IllegalArgumentException("\u8bf7\u5047\u8bb0\u5f55\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEmployeeId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u5458\u5de5");
+        }
+        if (clean(record.getLeaveType()) == null) {
+            throw new IllegalArgumentException("\u8bf7\u5047\u7c7b\u578b\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        record.setLeaveType(clean(record.getLeaveType()));
+        record.setReason(clean(record.getReason()));
+        if (record.getStartTime() == null || record.getEndTime() == null) {
+            throw new IllegalArgumentException("\u8bf7\u5047\u5f00\u59cb\u548c\u7ed3\u675f\u65f6\u95f4\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEndTime().isBefore(record.getStartTime())) {
+            throw new IllegalArgumentException("\u8bf7\u5047\u7ed3\u675f\u65f6\u95f4\u4e0d\u80fd\u65e9\u4e8e\u5f00\u59cb\u65f6\u95f4");
         }
         if (record.getStatus() == null || record.getStatus().isBlank()) {
-            record.setStatus("已记录");
+            record.setStatus("\u5df2\u8bb0\u5f55");
         }
     }
 

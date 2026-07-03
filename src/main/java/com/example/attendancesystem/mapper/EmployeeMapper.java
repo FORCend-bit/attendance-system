@@ -28,6 +28,12 @@ public interface EmployeeMapper {
               @Param("name") String name,
               @Param("departmentId") Long departmentId);
 
+    int countAll();
+
+    int countActive();
+
+    int countResigned();
+
     int insert(Employee employee);
 
     int update(Employee employee);

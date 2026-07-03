@@ -17,6 +17,8 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
+    private static final BigDecimal MAX_MONEY = new BigDecimal("99999999.99");
+
     private final EmployeeMapper employeeMapper;
     private final EmployeeSalaryMapper employeeSalaryMapper;
 
@@ -63,28 +65,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public void save(Employee employee, EmployeeSalary salary) {
         prepareEmployee(employee);
+        prepareSalary(salary);
         employeeMapper.insert(employee);
-        if (salary != null) {
-            prepareSalary(salary);
-            salary.setEmployeeId(employee.getId());
-            employeeSalaryMapper.insert(salary);
-        }
+        salary.setEmployeeId(employee.getId());
+        employeeSalaryMapper.insert(salary);
     }
 
     @Override
     @Transactional
     public void update(Employee employee, EmployeeSalary salary) {
         prepareEmployee(employee);
+        prepareSalary(salary);
         employeeMapper.update(employee);
-        if (salary != null) {
-            prepareSalary(salary);
-            salary.setEmployeeId(employee.getId());
-            EmployeeSalary old = employeeSalaryMapper.findByEmployeeId(employee.getId());
-            if (old == null) {
-                employeeSalaryMapper.insert(salary);
-            } else {
-                employeeSalaryMapper.updateByEmployeeId(salary);
-            }
+        salary.setEmployeeId(employee.getId());
+        EmployeeSalary old = employeeSalaryMapper.findByEmployeeId(employee.getId());
+        if (old == null) {
+            employeeSalaryMapper.insert(salary);
+        } else {
+            employeeSalaryMapper.updateByEmployeeId(salary);
         }
     }
 
@@ -92,39 +90,86 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void updateContact(String employeeNo, String phone, String email, String address) {
         Employee employee = findByEmployeeNo(employeeNo);
         if (employee == null) {
-            throw new IllegalArgumentException("未找到员工工号：" + employeeNo);
+            throw new IllegalArgumentException("\u672a\u627e\u5230\u5458\u5de5\u5de5\u53f7\uff1a" + employeeNo);
         }
-        employee.setPhone(phone);
-        employee.setEmail(email);
-        employee.setAddress(address);
+        employee.setPhone(clean(phone));
+        employee.setEmail(clean(email));
+        employee.setAddress(clean(address));
         employeeMapper.updateContact(employee);
     }
 
     @Override
     public void resign(Long id) {
-        if (id != null) {
-            employeeMapper.resign(id);
+        if (id == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u9700\u8981\u6ce8\u9500\u7684\u5458\u5de5");
         }
+        employeeMapper.resign(id);
     }
 
     private void prepareEmployee(Employee employee) {
         if (employee == null) {
-            throw new IllegalArgumentException("员工信息不能为空");
+            throw new IllegalArgumentException("\u5458\u5de5\u4fe1\u606f\u4e0d\u80fd\u4e3a\u7a7a");
         }
-        if (employee.getStatus() == null || employee.getStatus().isBlank()) {
-            employee.setStatus("在职");
+        employee.setEmployeeNo(clean(employee.getEmployeeNo()));
+        employee.setName(clean(employee.getName()));
+        employee.setGender(clean(employee.getGender()));
+        employee.setPhone(clean(employee.getPhone()));
+        employee.setEmail(clean(employee.getEmail()));
+        employee.setAddress(clean(employee.getAddress()));
+        employee.setStatus(clean(employee.getStatus()));
+
+        if (employee.getEmployeeNo() == null) {
+            throw new IllegalArgumentException("\u5458\u5de5\u5de5\u53f7\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (employee.getName() == null) {
+            throw new IllegalArgumentException("\u5458\u5de5\u59d3\u540d\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (employee.getDepartmentId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u6240\u5c5e\u90e8\u95e8");
+        }
+        if (employee.getPositionId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u5c97\u4f4d");
+        }
+        if (employee.getJobTitleId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u804c\u52a1");
+        }
+        if (employee.getHireDate() == null) {
+            throw new IllegalArgumentException("\u5165\u804c\u65e5\u671f\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (employee.getStatus() == null) {
+            employee.setStatus("\u5728\u804c");
+        }
+        if ("\u5728\u804c".equals(employee.getStatus())) {
+            employee.setResignDate(null);
         }
     }
 
     private void prepareSalary(EmployeeSalary salary) {
+        if (salary == null) {
+            throw new IllegalArgumentException("\u85aa\u8d44\u4fe1\u606f\u4e0d\u80fd\u4e3a\u7a7a");
+        }
         if (salary.getBaseSalary() == null) {
             salary.setBaseSalary(BigDecimal.ZERO);
         }
         if (salary.getAllowance() == null) {
             salary.setAllowance(BigDecimal.ZERO);
         }
+        validateMoney(salary.getBaseSalary(), "\u57fa\u672c\u5de5\u8d44");
+        validateMoney(salary.getAllowance(), "\u8865\u8d34");
         if (salary.getEffectiveDate() == null) {
             salary.setEffectiveDate(LocalDate.now());
+        }
+    }
+
+    private void validateMoney(BigDecimal value, String fieldName) {
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(fieldName + "\u4e0d\u80fd\u4e3a\u8d1f\u6570");
+        }
+        if (value.compareTo(MAX_MONEY) > 0) {
+            throw new IllegalArgumentException(fieldName + "\u4e0d\u80fd\u8d85\u8fc7 99999999.99");
+        }
+        if (value.scale() > 2) {
+            throw new IllegalArgumentException(fieldName + "\u6700\u591a\u4fdd\u7559 2 \u4f4d\u5c0f\u6570");
         }
     }
 

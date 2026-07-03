@@ -1,12 +1,155 @@
 <!doctype html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>月度统计</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>&#26376;&#24230;&#32479;&#35745;</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom"><div class="container"><a class="navbar-brand fw-bold" th:href="@{/admin}">管理员端</a><a class="btn btn-outline-secondary btn-sm" th:href="@{/admin}">返回</a></div></nav>
-<main class="container py-4"><h1 class="h3 mb-3">月度部门考勤统计</h1><div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
-    <form class="card card-body mb-3" method="get" th:action="@{/admin/statistics}"><div class="row g-2 align-items-end"><div class="col-md-4"><label class="form-label">统计月份</label><input class="form-control" type="month" name="yearMonth" th:value="${yearMonth}"></div><div class="col-md-2"><button class="btn btn-primary w-100" type="submit">生成统计</button></div></div></form>
-    <div class="card"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>月份</th><th>部门</th><th>员工数</th><th>正常次数</th><th>迟到次数</th><th>缺勤次数</th><th>请假天数</th><th>加班小时</th><th>出差天数</th></tr></thead><tbody>
-        <tr th:each="r:${rows}"><td th:text="${r.yearMonth}"></td><td th:text="${r.departmentName}"></td><td th:text="${r.employeeCount}"></td><td th:text="${r.normalCount}"></td><td th:text="${r.lateCount}"></td><td th:text="${r.absentCount}"></td><td th:text="${r.leaveDays}"></td><td th:text="${r.overtimeHours}"></td><td th:text="${r.tripDays}"></td></tr>
-        <tr th:if="${rows == null or #lists.isEmpty(rows)}"><td colspan="9" class="text-center text-secondary py-4">暂无统计数据</td></tr>
-    </tbody></table></div></div>
-</main></body></html>
+<nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">&#31649;&#29702;&#21592;&#31471;</a>
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin}">&#36820;&#22238;</a>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+            <h1 class="h3 mb-1">&#26376;&#24230;&#37096;&#38376;&#32771;&#21220;&#32479;&#35745;</h1>
+            <p class="text-secondary mb-0">&#25353;&#37096;&#38376;&#27719;&#24635;&#20986;&#21220;&#12289;&#35831;&#20551;&#12289;&#21152;&#29677;&#21644;&#20986;&#24046;&#24773;&#20917;</p>
+        </div>
+    </div>
+
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <form class="card card-body mb-3" method="get" th:action="@{/admin/statistics}">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">&#24180;&#20221;</label>
+                <select class="form-select" name="year">
+                    <option th:each="y:${years}" th:value="${y}" th:text="${y}" th:selected="${y == selectedYear}"></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&#26376;&#20221;</label>
+                <select class="form-select" name="month">
+                    <option th:each="m:${months}" th:value="${m}" th:text="${m + '&#26376;'}" th:selected="${m == selectedMonth}"></option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" type="submit">&#29983;&#25104;&#32479;&#35745;</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <h2 class="h5 mb-0">&#37096;&#38376;&#32771;&#21220;&#32479;&#35745;&#22270;</h2>
+                <span class="badge text-bg-light" th:text="${yearMonth}"></span>
+            </div>
+            <div style="height: 360px;">
+                <canvas id="statisticsChart" aria-label="department attendance chart"></canvas>
+            </div>
+            <div id="chartEmptyTip" class="text-center text-secondary py-4 d-none">&#26242;&#26080;&#21487;&#29992;&#32479;&#35745;&#25968;&#25454;</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="statisticsTable">
+                <thead>
+                <tr>
+                    <th>&#26376;&#20221;</th>
+                    <th>&#37096;&#38376;</th>
+                    <th>&#21592;&#24037;&#25968;</th>
+                    <th>&#27491;&#24120;</th>
+                    <th>&#36831;&#21040;</th>
+                    <th>&#26089;&#36864;</th>
+                    <th>&#32570;&#21220;</th>
+                    <th>&#35831;&#20551;&#22825;&#25968;</th>
+                    <th>&#21152;&#29677;&#23567;&#26102;</th>
+                    <th>&#20986;&#24046;&#22825;&#25968;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r:${rows}"
+                    th:data-department="${r.departmentName}"
+                    th:data-normal="${r.normalCount}"
+                    th:data-late="${r.lateCount}"
+                    th:data-early="${r.earlyLeaveCount}"
+                    th:data-absent="${r.absentCount}"
+                    th:data-leave="${r.leaveDays}"
+                    th:data-overtime="${r.overtimeHours}"
+                    th:data-trip="${r.tripDays}">
+                    <td th:text="${r.yearMonth}"></td>
+                    <td th:text="${r.departmentName}"></td>
+                    <td th:text="${r.employeeCount}"></td>
+                    <td th:text="${r.normalCount}"></td>
+                    <td th:text="${r.lateCount}"></td>
+                    <td th:text="${r.earlyLeaveCount}"></td>
+                    <td th:text="${r.absentCount}"></td>
+                    <td th:text="${r.leaveDays}"></td>
+                    <td th:text="${r.overtimeHours}"></td>
+                    <td th:text="${r.tripDays}"></td>
+                </tr>
+                <tr th:if="${rows == null or #lists.isEmpty(rows)}">
+                    <td colspan="10" class="text-center text-secondary py-4">&#26242;&#26080;&#32479;&#35745;&#25968;&#25454;</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const rows = Array.from(document.querySelectorAll('#statisticsTable tbody tr[data-department]'));
+        const chartCanvas = document.getElementById('statisticsChart');
+        const emptyTip = document.getElementById('chartEmptyTip');
+
+        if (!rows.length || typeof Chart === 'undefined') {
+            chartCanvas.classList.add('d-none');
+            emptyTip.classList.remove('d-none');
+            return;
+        }
+
+        const labels = rows.map(row => row.dataset.department || '');
+        const numberOf = (row, key) => Number(row.dataset[key] || 0);
+
+        new Chart(chartCanvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {label: '\u6b63\u5e38', data: rows.map(row => numberOf(row, 'normal')), backgroundColor: '#2f80ed'},
+                    {label: '\u8fdf\u5230', data: rows.map(row => numberOf(row, 'late')), backgroundColor: '#f2994a'},
+                    {label: '\u65e9\u9000', data: rows.map(row => numberOf(row, 'early')), backgroundColor: '#f2c94c'},
+                    {label: '\u7f3a\u52e4', data: rows.map(row => numberOf(row, 'absent')), backgroundColor: '#eb5757'},
+                    {label: '\u8bf7\u5047\u5929\u6570', data: rows.map(row => numberOf(row, 'leave')), backgroundColor: '#9b51e0'},
+                    {label: '\u52a0\u73ed\u5c0f\u65f6', data: rows.map(row => numberOf(row, 'overtime')), backgroundColor: '#27ae60'},
+                    {label: '\u51fa\u5dee\u5929\u6570', data: rows.map(row => numberOf(row, 'trip')), backgroundColor: '#56ccf2'}
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {mode: 'index', intersect: false},
+                plugins: {
+                    legend: {position: 'bottom'},
+                    tooltip: {enabled: true}
+                },
+                scales: {
+                    x: {grid: {display: false}},
+                    y: {beginAtZero: true, ticks: {precision: 0}}
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

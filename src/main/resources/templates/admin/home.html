@@ -3,31 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>管理员端</title>
+    <title>&#31649;&#29702;&#21592;&#31471;</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-white border-bottom">
     <div class="container">
-        <a class="navbar-brand fw-bold" th:href="@{/}">员工考勤信息管理系统</a>
+        <a class="navbar-brand fw-bold" th:href="@{/}">&#21592;&#24037;&#32771;&#21220;&#20449;&#24687;&#31649;&#29702;&#31995;&#32479;</a>
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary btn-sm" th:href="@{/employee}">员工端</a>
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/employee}">&#21592;&#24037;&#31471;</a>
         </div>
     </div>
 </nav>
+
 <main class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">管理员端</h1>
-            <p class="text-secondary mb-0">员工、出勤、请假、加班、出差、综合查询与月度统计</p>
+            <h1 class="h3 mb-1">&#31649;&#29702;&#21592;&#31471;</h1>
+            <p class="text-secondary mb-0">&#21592;&#24037;&#12289;&#20986;&#21220;&#12289;&#35831;&#20551;&#12289;&#21152;&#29677;&#12289;&#20986;&#24046;&#12289;&#32508;&#21512;&#26597;&#35810;&#19982;&#26376;&#24230;&#32479;&#35745;</p>
         </div>
     </div>
+
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <section class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-2">
+            <div class="card h-100"><div class="card-body"><div class="text-secondary small">&#21592;&#24037;&#24635;&#25968;</div><div class="fs-3 fw-bold" th:text="${employeeTotal}">0</div></div></div>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+            <div class="card h-100"><div class="card-body"><div class="text-secondary small">&#22312;&#32844;&#21592;&#24037;</div><div class="fs-3 fw-bold text-success" th:text="${activeEmployeeTotal}">0</div></div></div>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+            <div class="card h-100"><div class="card-body"><div class="text-secondary small">&#24050;&#27880;&#38144;&#21592;&#24037;</div><div class="fs-3 fw-bold text-secondary" th:text="${resignedEmployeeTotal}">0</div></div></div>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+            <div class="card h-100"><div class="card-body"><div class="text-secondary small">&#26412;&#26376;&#36831;&#21040;</div><div class="fs-3 fw-bold text-warning" th:text="${monthLateCount}">0</div></div></div>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+            <div class="card h-100"><div class="card-body"><div class="text-secondary small">&#26412;&#26376;&#35831;&#20551;&#22825;&#25968;</div><div class="fs-3 fw-bold text-primary" th:text="${monthLeaveDays}">0</div></div></div>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+            <div class="card h-100"><div class="card-body"><div class="text-secondary small">&#26412;&#26376;&#21152;&#29677;&#23567;&#26102;</div><div class="fs-3 fw-bold text-info" th:text="${monthOvertimeHours}">0</div></div></div>
+        </div>
+    </section>
+
     <section class="page-intro mb-4">
         <div class="row g-3 align-items-center">
             <div class="col-lg-8">
-                <h2 class="h5">系统简介</h2>
-                <p class="text-secondary mb-0">本系统用于管理员维护员工基础信息、考勤记录、请假记录、加班记录和出差记录，并支持多条件综合查询和月度部门考勤统计。员工端通过工号进入，只能查看和维护自己的联系方式。</p>
+                <h2 class="h5">&#31995;&#32479;&#31616;&#20171;</h2>
+                <p class="text-secondary mb-0">&#26412;&#31995;&#32479;&#29992;&#20110;&#31649;&#29702;&#21592;&#32500;&#25252;&#21592;&#24037;&#22522;&#26412;&#20449;&#24687;&#12289;&#32771;&#21220;&#35760;&#24405;&#12289;&#35831;&#20551;&#35760;&#24405;&#12289;&#21152;&#29677;&#35760;&#24405;&#21644;&#20986;&#24046;&#35760;&#24405;&#65292;&#24182;&#25903;&#25345;&#22810;&#26465;&#20214;&#32508;&#21512;&#26597;&#35810;&#21644;&#26376;&#24230;&#37096;&#38376;&#32771;&#21220;&#32479;&#35745;&#12290;&#21592;&#24037;&#31471;&#36890;&#36807;&#24037;&#21495;&#36827;&#20837;&#65292;&#21482;&#33021;&#26597;&#30475;&#21644;&#32500;&#25252;&#33258;&#24049;&#30340;&#32852;&#31995;&#26041;&#24335;&#12290;</p>
             </div>
             <div class="col-lg-4">
                 <div class="row g-2 text-center">
@@ -39,15 +64,19 @@
             </div>
         </div>
     </section>
-    <div class="row g-3">
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/employee/list}"><div class="card-body"><h2 class="h5">员工管理</h2><p class="text-secondary mb-0">维护员工与薪资信息</p></div></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/attendance/list}"><div class="card-body"><h2 class="h5">出勤管理</h2><p class="text-secondary mb-0">登记出勤并自动判断状态</p></div></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/leave/list}"><div class="card-body"><h2 class="h5">请假管理</h2><p class="text-secondary mb-0">记录请假并计算天数</p></div></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/overtime/list}"><div class="card-body"><h2 class="h5">加班管理</h2><p class="text-secondary mb-0">记录加班并计算小时</p></div></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/trip/list}"><div class="card-body"><h2 class="h5">出差管理</h2><p class="text-secondary mb-0">记录出差并计算天数</p></div></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/search}"><div class="card-body"><h2 class="h5">综合查询</h2><p class="text-secondary mb-0">按工号、姓名、部门、时间查询</p></div></a></div>
-        <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/statistics}"><div class="card-body"><h2 class="h5">月度统计</h2><p class="text-secondary mb-0">按部门统计考勤数据</p></div></a></div>
-    </div>
+
+    <section>
+        <h2 class="h5 mb-3">&#21151;&#33021;&#20837;&#21475;</h2>
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/employee/list}"><div class="card-body"><h3 class="h5">&#21592;&#24037;&#31649;&#29702;</h3><p class="text-secondary mb-0">&#32500;&#25252;&#21592;&#24037;&#19982;&#34218;&#36164;&#20449;&#24687;</p></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/attendance/list}"><div class="card-body"><h3 class="h5">&#20986;&#21220;&#31649;&#29702;</h3><p class="text-secondary mb-0">&#24405;&#20837;&#20986;&#21220;&#24182;&#21028;&#26029;&#29366;&#24577;</p></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/leave/list}"><div class="card-body"><h3 class="h5">&#35831;&#20551;&#31649;&#29702;</h3><p class="text-secondary mb-0">&#35760;&#24405;&#35831;&#20551;&#24182;&#35745;&#31639;&#22825;&#25968;</p></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/overtime/list}"><div class="card-body"><h3 class="h5">&#21152;&#29677;&#31649;&#29702;</h3><p class="text-secondary mb-0">&#35760;&#24405;&#21152;&#29677;&#24182;&#35745;&#31639;&#23567;&#26102;</p></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/trip/list}"><div class="card-body"><h3 class="h5">&#20986;&#24046;&#31649;&#29702;</h3><p class="text-secondary mb-0">&#35760;&#24405;&#20986;&#24046;&#24182;&#35745;&#31639;&#22825;&#25968;</p></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/search}"><div class="card-body"><h3 class="h5">&#32508;&#21512;&#26597;&#35810;</h3><p class="text-secondary mb-0">&#25353;&#24037;&#21495;&#12289;&#22995;&#21517;&#12289;&#37096;&#38376;&#12289;&#26102;&#38388;&#26597;&#35810;</p></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a class="card module-card h-100 text-decoration-none" th:href="@{/admin/statistics}"><div class="card-body"><h3 class="h5">&#26376;&#24230;&#32479;&#35745;</h3><p class="text-secondary mb-0">&#25353;&#37096;&#38376;&#32479;&#35745;&#32771;&#21220;&#25968;&#25454;</p></div></a></div>
+        </div>
+    </section>
 </main>
 </body>
 </html>

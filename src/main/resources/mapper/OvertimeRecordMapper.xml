@@ -4,6 +4,9 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.attendancesystem.mapper.OvertimeRecordMapper">
 
+    <sql id="statusActive">CONVERT(0xE59CA8E8818C USING utf8mb4)</sql>
+    <sql id="deletedPrefix">CONVERT(0x5BE5B7B2E588A0E999A45D USING utf8mb4)</sql>
+
     <resultMap id="OvertimeRecordResultMap" type="com.example.attendancesystem.entity.OvertimeRecord">
         <id property="id" column="id"/>
         <result property="employeeId" column="employee_id"/>
@@ -31,8 +34,8 @@
         INNER JOIN employee e ON o.employee_id = e.id
         LEFT JOIN department d ON e.department_id = d.id
         <where>
-            AND e.status = '在职'
-            AND (o.reason IS NULL OR o.reason NOT LIKE '[已删除]%')
+            AND e.status = <include refid="statusActive"/>
+            AND (o.reason IS NULL OR o.reason NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
             <if test="employeeNo != null and employeeNo != ''">
                 AND e.employee_no = #{employeeNo}
             </if>
@@ -56,7 +59,7 @@
         SELECT id, employee_id, overtime_date, start_time, end_time, hours, reason, created_at, updated_at
         FROM overtime_record
         WHERE employee_id = #{employeeId}
-          AND (reason IS NULL OR reason NOT LIKE '[已删除]%')
+          AND (reason IS NULL OR reason NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
         ORDER BY overtime_date DESC
     </select>
 
@@ -64,6 +67,15 @@
         SELECT id, employee_id, overtime_date, start_time, end_time, hours, reason, created_at, updated_at
         FROM overtime_record
         WHERE id = #{id}
+    </select>
+
+    <select id="sumHoursInMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(o.hours), 0)
+        FROM overtime_record o
+        INNER JOIN employee e ON o.employee_id = e.id
+        WHERE DATE_FORMAT(o.overtime_date, '%Y-%m') = #{yearMonth}
+          AND e.status = <include refid="statusActive"/>
+          AND (o.reason IS NULL OR o.reason NOT LIKE CONCAT(<include refid="deletedPrefix"/>, '%'))
     </select>
 
     <insert id="insert" parameterType="com.example.attendancesystem.entity.OvertimeRecord">
@@ -83,7 +95,7 @@
 
     <update id="logicalDelete">
         UPDATE overtime_record
-        SET reason = CONCAT('[已删除]', COALESCE(reason, ''))
+        SET reason = CONCAT(<include refid="deletedPrefix"/>, COALESCE(reason, ''))
         WHERE id = #{id}
     </update>
 </mapper>

@@ -46,11 +46,13 @@ public class OvertimeServiceImpl implements OvertimeService {
 
     @Override
     public void save(OvertimeRecord record) {
+        prepare(record);
         overtimeRecordMapper.insert(record);
     }
 
     @Override
     public void update(OvertimeRecord record) {
+        prepare(record);
         overtimeRecordMapper.update(record);
     }
 
@@ -59,6 +61,25 @@ public class OvertimeServiceImpl implements OvertimeService {
         if (id != null) {
             overtimeRecordMapper.logicalDelete(id);
         }
+    }
+
+    private void prepare(OvertimeRecord record) {
+        if (record == null) {
+            throw new IllegalArgumentException("\u52a0\u73ed\u8bb0\u5f55\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEmployeeId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u5458\u5de5");
+        }
+        if (record.getOvertimeDate() == null) {
+            throw new IllegalArgumentException("\u52a0\u73ed\u65e5\u671f\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getStartTime() == null || record.getEndTime() == null) {
+            throw new IllegalArgumentException("\u52a0\u73ed\u5f00\u59cb\u548c\u7ed3\u675f\u65f6\u95f4\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEndTime().isBefore(record.getStartTime())) {
+            throw new IllegalArgumentException("\u52a0\u73ed\u7ed3\u675f\u65f6\u95f4\u4e0d\u80fd\u65e9\u4e8e\u5f00\u59cb\u65f6\u95f4");
+        }
+        record.setReason(clean(record.getReason()));
     }
 
     private String clean(String value) {

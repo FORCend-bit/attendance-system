@@ -69,19 +69,26 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private void prepare(AttendanceRecord record) {
         if (record == null) {
-            throw new IllegalArgumentException("出勤记录不能为空");
+            throw new IllegalArgumentException("\u51fa\u52e4\u8bb0\u5f55\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getEmployeeId() == null) {
+            throw new IllegalArgumentException("\u8bf7\u9009\u62e9\u5458\u5de5");
         }
         if (record.getAttendanceDate() == null) {
-            record.setAttendanceDate(LocalDate.now());
+            throw new IllegalArgumentException("\u51fa\u52e4\u65e5\u671f\u4e0d\u80fd\u4e3a\u7a7a");
+        }
+        if (record.getCheckInTime() != null && record.getCheckOutTime() != null
+                && record.getCheckOutTime().isBefore(record.getCheckInTime())) {
+            throw new IllegalArgumentException("\u4e0b\u73ed\u6253\u5361\u65f6\u95f4\u4e0d\u80fd\u65e9\u4e8e\u4e0a\u73ed\u6253\u5361\u65f6\u95f4");
         }
         if (record.getCheckInTime() == null && record.getCheckOutTime() == null) {
-            record.setStatus("缺勤");
+            record.setStatus("\u7f3a\u52e4");
         } else if (record.getCheckInTime() != null && record.getCheckInTime().toLocalTime().isAfter(WORK_START)) {
-            record.setStatus("迟到");
+            record.setStatus("\u8fdf\u5230");
         } else if (record.getCheckOutTime() != null && record.getCheckOutTime().toLocalTime().isBefore(WORK_END)) {
-            record.setStatus("早退");
+            record.setStatus("\u65e9\u9000");
         } else {
-            record.setStatus("正常");
+            record.setStatus("\u6b63\u5e38");
         }
     }
 
